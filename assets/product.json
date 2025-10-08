@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Mechanical Keyboard",
+    "price": 49.99,
+    "category": "Accessories",
+    "description": "Durable mechanical keyboard with RGB backlight and tactile switches for gaming and productivity.",
+    "brand": "Keychron"
+  },
+  {
+    "id": 2,
+    "name": "Wireless Mouse",
+    "price": 19.99,
+    "category": "Accessories",
+    "description": "Lightweight wireless mouse with ergonomic design and long-lasting battery life.",
+    "brand": "Logitech"
+  },
+  {
+    "id": 3,
+    "name": "27 Monitor",
+    "price": 199.00,
+    "category": "Monitors",
+    "description": "27-inch Full HD IPS monitor with 75Hz refresh rate and ultra-thin bezels for immersive viewing.",
+    "brand": "Dell"
+  },
+  {
+    "id": 4,
+    "name": "Noise Cancelling Headphones",
+    "price": 129.99,
+    "category": "Audio",
+    "description": "Over-ear Bluetooth headphones with active noise cancellation and 30-hour battery life.",
+    "brand": "Sony"
+  },
+  {
+    "id": 5,
+    "name": "External SSD 1TB",
+    "price": 99.50,
+    "category": "Storage",
+    "description": "Portable 1TB external SSD with fast USB-C connectivity and shock-resistant build.",
+    "brand": "Samsung"
+  }
+]
