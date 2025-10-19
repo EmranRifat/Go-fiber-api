@@ -17,6 +17,7 @@ import (
 
 
 func main() {
+
 	cfg := config.Load()
 	jwtm := security.NewJWTManager(cfg.JWTSecret, cfg.JWTExpiresHours)
 
@@ -55,8 +56,8 @@ func main() {
 
 
 	// App routes (auth/products)
-	// routes.Register(app, jwtm)
-	routes.Register(app, jwtm, db)  // <-- add db here
+	// routes.ManageRoutes(app, jwtm)
+	routes.ManageRoutes(app, jwtm, db)  // <-- add db here
 
 	addr := fmt.Sprintf(":%s", cfg.AppPort)
 	if err := app.Listen(addr); err != nil {

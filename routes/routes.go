@@ -1,3 +1,4 @@
+// routes/routes.go
 package routes
 
 import (
@@ -9,26 +10,29 @@ import (
 	"go-fiber-api/security"
 )
 
-func Register(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
+func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 	api := app.Group("/api")
 
 	// Auth (public)
-	auth := api.Group("/auth")
-	auth.Post("/register", controllers.Register)
-	auth.Post("/login", controllers.Login(jwtm))
+	api.Post("/auth/register", controllers.RegisterDB(db))
+	api.Post("/auth/login", controllers.Login(jwtm))
 
-	// Products (reads are public)
-	product := api.Group("/product")
-	product.Get("/", controllers.GetProducts)
-	product.Get("/:id", controllers.GetProductByID)
+	// Products (PUBLIC)
+	api.Get("/product",  controllers.ListProductsDB(db))
 
-	// CREATE (PUBLIC) — no middleware here
-	product.Post("/", controllers.CreateProductDB(db))
+	// Detail
+	api.Get("/product/:id", controllers.GetProductByIDDB(db))
 
-	// Protected writes — attach middleware per-route
-	product.Put("/:id",   middleware.Protect(jwtm), controllers.UpdateProduct) // swap to DB when ready
-	product.Patch("/:id", middleware.Protect(jwtm), controllers.PatchProduct)  // swap to DB when ready
-	product.Delete("/:id",middleware.Protect(jwtm), controllers.DeleteProduct) // swap to DB when ready
+	// Create
+	api.Post("/product",  controllers.CreateProductDB(db))
+
+	// (Optional) protected writes later:
+	// api.Put("/product/:id",   middleware.Protect(jwtm), controllers.UpdateProductDB(db))
+	// api.Patch("/product/:id", middleware.Protect(jwtm), controllers.PatchProductDB(db))
+	// api.Delete("/product/:id",middleware.Protect(jwtm), controllers.DeleteProductDB(db))
+
+
+
 
 	
 	// Who am I (protected)

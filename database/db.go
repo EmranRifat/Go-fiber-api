@@ -24,12 +24,19 @@ func Connect() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	// demo migration (remove if you don't have models.Product yet)
-	if err := db.AutoMigrate(&models.Product{}); err != nil {
+	// =================================================
+	// migrate models to create tables if not exist 
+	// =================================================
+	if err := db.AutoMigrate(
+		&models.Product{},
+		&models.User{},
+
+	);
+	 err != nil {
 		return nil, err
 	}
-	return db, nil
-}
+		return db, nil
+	}
 
 
 
