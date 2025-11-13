@@ -7,44 +7,67 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	fiberlogger "github.com/gofiber/fiber/v2/middleware/logger"
+
+	"github.com/gofiber/template/html/v2"
 
 	"go-fiber-api/config"
 	"go-fiber-api/database"
+	"go-fiber-api/logger"
 	"go-fiber-api/routes"
 	"go-fiber-api/security"
 )
-
 
 func main() {
 
 	cfg := config.Load()
 	jwtm := security.NewJWTManager(cfg.JWTSecret, cfg.JWTExpiresHours)
 
-	// Connect DB + ping
-	db, err := database.Connect()
+	// DB connect
+	db, err := database.ConnectDB()
 	if err != nil {
-		panic(err)
+		logger.Error("Failed to connect to database", err)
+		return
 	}
 	if err := database.Ping(db); err != nil {
-		panic("DB ping failed: " + err.Error())
+		logger.Error("DB ping failed", err)
+		return
 	}
-	fmt.Println("DB Connection is OK...✅")
+	logger.Success("DB Connection OK 👍")
+	// ---------**********--------------------------
 
 
-	// Fiber app
-	app := fiber.New(fiber.Config{AppName: "Go Fiber API"})
-	app.Use(logger.New())
+	// ✅ Setup HTML Engine
+	engine := html.New("./views", ".html")
+
+	// ✅ Create fiber app with HTML engine
+	app := fiber.New(fiber.Config{
+		AppName: "Go Fiber API",
+		Views:   engine,
+	})
+
+	app.Use(fiberlogger.New())
 	app.Use(cors.New())
+
+
+
+	// Health check route
+	app.Get("/api/health", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{"status": "ok"})
+	})
+
+	// ✅ Home route to render HTML
+	// app.Get("/", func(c *fiber.Ctx) error {
+	// 	return c.Render("index", fiber.Map{})
+	// })
+
+
 
 	// Basic routes
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("🚀 Go Fiber API running...")
 	})
-	app.Get("/api/health", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"status": "ok"})
-	})
-
+	
 
 	// DB ping route
 	app.Get("/api/db/ping", func(c *fiber.Ctx) error {
@@ -54,13 +77,14 @@ func main() {
 		return c.JSON(fiber.Map{"db": "ok"})
 	})
 
+	// App routes
+	routes.ManageRoutes(app, jwtm, db)
 
-	// App routes (auth/products)
-	// routes.ManageRoutes(app, jwtm)
-	routes.ManageRoutes(app, jwtm, db)  // <-- add db here
-
+	// Start server
 	addr := fmt.Sprintf(":%s", cfg.AppPort)
+	logger.Success(fmt.Sprintf("🚀 Server is running at http://localhost%s", addr))
 	if err := app.Listen(addr); err != nil {
-		panic(err)
+		logger.Error("Failed to start server", err)
+		return
 	}
 }

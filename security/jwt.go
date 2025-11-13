@@ -7,7 +7,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-
 // Claims defines what you put inside the token.
 // Add more fields later (e.g., roles) as needed.
 type Claims struct {

@@ -1,0 +1,26 @@
+services:
+  go-test-db:
+    restart: unless-stopped
+    image: postgres:16
+    environment:
+      POSTGRES_USER: test-user
+      POSTGRES_PASSWORD: test-user-password-1234
+      POSTGRES_DB: go-test-db
+    volumes:
+      - go_test_db_data:/var/lib/postgresql/data
+    ports:
+      - 6000:5432
+
+  ekdak-pgadmin:
+    restart: unless-stopped
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@ekdak.com
+      PGADMIN_DEFAULT_PASSWORD: admin-password-4321
+      PGADMIN_LISTEN_PORT: 80
+      SCRIPT_NAME: /pgadmin
+    ports:
+      - "5050:80"
+
+volumes:
+  go_test_db_data:

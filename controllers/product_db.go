@@ -84,6 +84,7 @@ func GetProductByIDDB(db *gorm.DB) fiber.Handler {
 			return c.Status(400).JSON(fiber.Map{"error": "invalid id"})
 		}
 		var p models.Product
+
 		if err := db.First(&p, id).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				return c.Status(404).JSON(fiber.Map{"error": "product not found"})

@@ -26,7 +26,7 @@ func normalizeEmail(s string) string {
 }
 
 
-// POST /api/auth/register (DB)
+// POST /api/auth/register  (DB)
 func RegisterDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var in types.RegisterInput
@@ -40,16 +40,16 @@ func RegisterDB(db *gorm.DB) fiber.Handler {
 				fiber.Map{"error": "name required, valid email, password>=6"},
 			)
 		}
-
-		// Check email conflict (case-insensitive)
+		
+		// conflict check (case-insensitive)
 		var exists models.User
 		if err := db.Where("LOWER(email) = ?", in.Email).First(&exists).Error; err == nil {
 			return c.Status(fiber.StatusConflict).JSON(fiber.Map{"error": "email already registered"})
-		} else if err != nil && err != gorm.ErrRecordNotFound {
+		} else if err != gorm.ErrRecordNotFound {
 			return c.Status(500).JSON(fiber.Map{"error": "db error"})
 		}
 
-		// Hash password
+		// hash password
 		hash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "hashing error"})
@@ -57,14 +57,16 @@ func RegisterDB(db *gorm.DB) fiber.Handler {
 
 		u := models.User{
 			Name:         in.Name,
-			Email:        in.Email,
-			PasswordHash: string(hash), // <-- FIX: use PasswordHash
+			Email:        in.Email,         // already normalized
+			PasswordHash: string(hash),
 		}
 
 		if err := db.Create(&u).Error; err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "db error"})
 		}
 
+		
+		// never return password hash
 		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 			"user": fiber.Map{
 				"id":    u.ID,
@@ -77,28 +79,46 @@ func RegisterDB(db *gorm.DB) fiber.Handler {
 }
 
 
-// POST /api/auth/login
-func Login(jwtm *security.JWTManager) fiber.Handler {
-	return func(c *fiber.Ctx) error {
+ 
+// POST /api/auth/login  (DB-backed)
+func LoginDB(jwtm *security.JWTManager, db *gorm.DB) fiber.Handler {
+	return func(c *fiber.Ctx) error { 
 		var in types.LoginInput
 		if err := c.BodyParser(&in); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid body"})
 		}
 		email := normalizeEmail(in.Email)
+		if !strings.Contains(email, "@") || len(in.Password) == 0 {
+			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"error": "invalid credentials"})
+		}
 
-		userMu.RLock()
-		u := usersByEM[email]
-		userMu.RUnlock()
+		// 1) find the user by email (case-insensitive)
+		var u models.User
+		if err := db.Where("LOWER(email) = ?", email).First(&u).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "invalid credentials"})
+			}
+			return c.Status(500).JSON(fiber.Map{"error": "db error"})
+		}
 
-		if u == nil || bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(in.Password)) != nil {
+		// 2) verify password
+		if err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(in.Password)); err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "invalid credentials"})
 		}
 
-		tok, err := jwtm.Sign(u.ID, u.Email)
+		// 3) issue JWT
+		tok, err := jwtm.Sign(int(u.ID), u.Email)
 		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "token issue"})
+			return c.Status(500).JSON(fiber.Map{"error": "token issue"})
 		}
 
+		// // 4) optional: update login metadata
+		// _ = db.Model(&u).Updates(map[string]any{
+		// 	"last_login_at": time.Now(),
+		// 	"login_count":   gorm.Expr("login_count + 1"),
+		// }).Error
+
+		// 5) return token + public user info
 		return c.JSON(fiber.Map{
 			"token": tok,
 			"user":  fiber.Map{"id": u.ID, "name": u.Name, "email": u.Email},
