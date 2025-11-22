@@ -21,10 +21,12 @@ func GetAllOrders(db *gorm.DB) fiber.Handler {
 		return c.JSON(fiber.Map{
 			"success": true,
 			"count":   len(orders),
-			"data":    orders,
+			"data":    orders, 
 		})
 	}
 }
+
+
 
 // GetOrderByID retrieves a single order by its order_id
 func GetOrderByID(db *gorm.DB) fiber.Handler {

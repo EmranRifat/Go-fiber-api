@@ -37,6 +37,9 @@ func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 	api.Get("/orders", handlers.GetAllOrders(db))
 	api.Get("/orders/:order_id", handlers.GetOrderByID(db))
 
+
+
+	
 	// Who am I (protected)
 	api.Get("/me", middleware.Protect(jwtm), func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{

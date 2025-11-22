@@ -99,10 +99,11 @@ func SeedProductsFromJSON(db *gorm.DB) error {
 	return nil
 }
 
+
+
 // SeedOrdersFromJSON reads orders from json_data/order.json and seeds them
 func SeedOrdersFromJSON(db *gorm.DB) error {
 	logger.Success("📋 Seeding orders from JSON...")
-
 	// Check if orders already exist
 	var count int64
 	if err := db.Model(&models.Order{}).Count(&count).Error; err != nil {
@@ -114,6 +115,7 @@ func SeedOrdersFromJSON(db *gorm.DB) error {
 		return nil
 	}
 
+	
 	// Read JSON file
 	projectRoot, err := os.Getwd()
 	if err != nil {

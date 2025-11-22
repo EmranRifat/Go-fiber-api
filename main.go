@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	_ "github.com/joho/godotenv/autoload"
-
+	
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	fiberlogger "github.com/gofiber/fiber/v2/middleware/logger"
@@ -36,7 +36,6 @@ func main() {
 	logger.Success("DB Connection OK 👍")
 	// ---------**********--------------------------
 
-
 	// ✅ Setup HTML Engine
 	engine := html.New("./views", ".html")
 
@@ -45,7 +44,7 @@ func main() {
 		AppName: "Go Fiber API",
 		Views:   engine,
 	})
-
+	
 	app.Use(fiberlogger.New())
 	app.Use(cors.New())
 
@@ -61,14 +60,11 @@ func main() {
 	// 	return c.Render("index", fiber.Map{})
 	// })
 
-
-
 	// Basic routes
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("🚀 Go Fiber API running...")
 	})
 	
-
 	// DB ping route
 	app.Get("/api/db/ping", func(c *fiber.Ctx) error {
 		if err := database.Ping(db); err != nil {
@@ -82,7 +78,7 @@ func main() {
 
 	// Start server
 	addr := fmt.Sprintf(":%s", cfg.AppPort)
-	logger.Success(fmt.Sprintf("🚀 Server is running at http://localhost%s", addr))
+	logger.Success(fmt.Sprintf("🚀Server is running at http://localhost%s", addr))
 	if err := app.Listen(addr); err != nil {
 		logger.Error("Failed to start server", err)
 		return

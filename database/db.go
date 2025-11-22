@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -13,7 +12,6 @@ import (
 
 var DB *gorm.DB
 
-// InitDB initializes the database connection with auto migration
 func InitDB() (*gorm.DB, error) {
 	// Load environment variables from .env file
 	if err := godotenv.Load(); err != nil {
@@ -33,7 +31,7 @@ func InitDB() (*gorm.DB, error) {
 		sslmode = "disable"
 	}
 
-	// Build PostgreSQL DSN string
+	// Build PostgreSQL DSN string (Data Source Name)
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		host, port, user, password, database, sslmode)
 
@@ -42,10 +40,10 @@ func InitDB() (*gorm.DB, error) {
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		fmt.Println("Failed to connect to the database:", err)
+		fmt.Println("Failed to connect DB:", err)
 		return nil, err
 	}
-	fmt.Println("✅ Successfully connected to the database")
+	fmt.Println("✅ Successfully connected DB ")
 
 	// Auto migrate models
 	if err := autoMigrate(); err != nil {
@@ -53,6 +51,7 @@ func InitDB() (*gorm.DB, error) {
 		return nil, err
 	}
 	fmt.Println("✅ Database migration completed successfully")
+
 
 	// Seed database with initial data
 	if err := SeedData(DB); err != nil {
