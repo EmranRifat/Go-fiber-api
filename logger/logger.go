@@ -25,6 +25,7 @@ func Info(message string) {
 	infoLogger.Println(message)
 }
 
+
 // Success logs success messages
 func Success(message string) {
 	fmt.Printf("✅ %s\n", message)

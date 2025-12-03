@@ -11,3 +11,9 @@ type User struct {
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
+
+
+//table Name overrides the default table name for User model
+func (User) TableName() string {
+	return "users_tbl"
+}

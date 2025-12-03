@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -50,7 +51,7 @@ func InitDB() (*gorm.DB, error) {
 		fmt.Println("Failed to migrate models:", err)
 		return nil, err
 	}
-	fmt.Println("✅ Database migration completed successfully")
+	fmt.Println("✅ Database migration completed successfully ")
 
 
 	// Seed database with initial data

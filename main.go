@@ -24,7 +24,8 @@ func main() {
 	jwtm := security.NewJWTManager(cfg.JWTSecret, cfg.JWTExpiresHours)
 
 	// DB connect
-	db, err := database.ConnectDB()
+	db, err := database.ConnectDB();
+
 	if err != nil {
 		logger.Error("Failed to connect to database", err)
 		return
@@ -34,8 +35,9 @@ func main() {
 		return
 	}
 	logger.Success("DB Connection OK 👍")
-	// ---------**********--------------------------
 
+	// ----------------**********--------------------
+       
 	// ✅ Setup HTML Engine
 	engine := html.New("./views", ".html")
 

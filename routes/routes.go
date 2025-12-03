@@ -37,7 +37,10 @@ func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 	api.Get("/orders", handlers.GetAllOrders(db))
 	api.Get("/orders/:order_id", handlers.GetOrderByID(db))
 
-
+	// -------- Weather (public) --------
+	api.Get("/weather",                    controllers.ListWeatherDB(db))          // list + filters
+	api.Get("/weather/:id",                controllers.GetWeatherByIDDB(db))       // by numeric ID
+	api.Get("/weather/division/:division", controllers.GetWeatherByDivisionDB(db)) // by division name
 
 	
 	// Who am I (protected)

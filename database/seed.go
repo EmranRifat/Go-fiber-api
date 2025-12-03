@@ -28,10 +28,16 @@ func SeedData(db *gorm.DB) error {
 		logger.Error("Failed to seed orders", err)
 		return err
 	}
+	// Seed weather from JSON
+	if err := SeedWeatherFromJSON(db); err != nil {
+		logger.Error("Failed to seed weather", err)
+		return err
+	}
 
 	logger.Success("✅ Database seeding completed successfully")
 	return nil
 }
+
 
 // SeedProductsFromJSON reads products from assets/product.json and seeds them
 func SeedProductsFromJSON(db *gorm.DB) error {
@@ -114,8 +120,7 @@ func SeedOrdersFromJSON(db *gorm.DB) error {
 		logger.Info(fmt.Sprintf("Orders already seeded (%d records), skipping...", count))
 		return nil
 	}
-
-	
+		
 	// Read JSON file
 	projectRoot, err := os.Getwd()
 	if err != nil {
@@ -176,6 +181,76 @@ func SeedOrdersFromJSON(db *gorm.DB) error {
 	return nil
 }
 
+
+
+ 
+// SeedWeatherFromJSON reads json_data/weather.json and seeds rows.
+func SeedWeatherFromJSON(db *gorm.DB) error {
+	logger.Success("📋 Seeding Weather from JSON...")
+
+	// Read JSON file (relative to current working dir)
+	projectRoot, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get working directory: %w", err)
+	}
+	filePath := filepath.Join(projectRoot, "json_data", "weather.json")
+	file, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open weather.json: %w", err)
+	}
+	defer file.Close()
+
+	// Decode JSON. Use float64 for numeric values to match the model types.
+	var raw []struct {
+		Division     string  `json:"division"`
+		Lat          float64 `json:"lat"`
+		Lon          float64 `json:"lon"`
+		TemperatureC float64 `json:"temperature_c"`
+		Humidity     int     `json:"humidity"`
+		Condition    string  `json:"condition"`
+		WindKph      float64 `json:"wind_kph"`
+		VisibilityKm float64 `json:"visibility_km"`
+		UpdatedAt    string  `json:"updated_at"` // "2025-11-23 16:00"
+	}
+	if err := json.NewDecoder(file).Decode(&raw); err != nil {
+		return fmt.Errorf("failed to decode weather.json: %w", err)
+	}
+
+	// Map to model (preallocate exact length)
+	weathers := make([]models.Weather, len(raw))
+	for i, r := range raw {
+		ts, err := parseTimestamp(r.UpdatedAt)
+		if err != nil {
+			logger.Error(fmt.Sprintf("Failed to parse timestamp for division %s", r.Division), err)
+			ts = time.Now()
+		}
+		weathers[i] = models.Weather{
+			Division:     r.Division,
+			Lat:          r.Lat,
+			Lon:          r.Lon,
+			TemperatureC: r.TemperatureC,
+			Humidity:     r.Humidity,
+			Condition:    r.Condition,
+			WindKph:      r.WindKph,
+			VisibilityKm: r.VisibilityKm,
+			UpdatedAt:    ts,
+		}
+	}
+
+	// Insert with upsert-on-division (unique index on division ensures no duplicates).
+	if err := db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "division"}},
+		DoNothing: true,
+	}).Create(&weathers).Error; err != nil {
+		return fmt.Errorf("failed to seed weathers: %w", err)
+	}
+
+	logger.Success(fmt.Sprintf("✅ Successfully seeded %d weathers", len(weathers)))
+	return nil
+}
+
+
+
 // parseTimestamp parses various timestamp formats
 func parseTimestamp(timestamp string) (time.Time, error) {
 	// Try RFC3339 format first (e.g., "2025-02-10T14:10:00Z")
@@ -188,8 +263,11 @@ func parseTimestamp(timestamp string) (time.Time, error) {
 	formats := []string{
 		"2006-01-02T15:04:05Z07:00",
 		"2006-01-02 15:04:05",
+		// support timestamps without seconds, e.g. "2025-11-23 16:00"
+		"2006-01-02 15:04",
 		"2006-01-02",
 	}
+	
 
 	for _, format := range formats {
 		t, err := time.Parse(format, timestamp)

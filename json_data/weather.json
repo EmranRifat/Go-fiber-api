@@ -1,0 +1,267 @@
+[
+  {
+    "division": "Dhaka",
+    "lat": 23.8103,
+    "lon": 90.4125,
+    "temperature_c": 28,
+    "humidity": 65,
+    "condition": "Partly Cloudy",
+    "wind_kph": 12,
+    "visibility_km": 10,
+    "updated_at": "2025-11-23 16:00"
+  },
+  {
+    "division": "Chattogram",
+    "lat": 22.3569,
+    "lon": 91.7832,
+    "temperature_c": 29,
+    "humidity": 70,
+    "condition": "Humid & Cloudy",
+    "wind_kph": 14,
+    "visibility_km": 9,
+    "updated_at": "2025-11-23 16:00"
+  },
+  {
+    "division": "Rajshahi",
+    "lat": 24.3745,
+    "lon": 88.6042,
+    "temperature_c": 27,
+    "humidity": 55,
+    "condition": "Sunny",
+    "wind_kph": 10,
+    "visibility_km": 12,
+    "updated_at": "2025-11-23 16:00"
+  },
+  {
+    "division": "Khulna",
+    "lat": 22.8456,
+    "lon": 89.5403,
+    "temperature_c": 28,
+    "humidity": 68,
+    "condition": "Partly Cloudy",
+    "wind_kph": 11,
+    "visibility_km": 10,
+    "updated_at": "2025-11-23 16:00"
+  },
+  {
+    "division": "Barishal",
+    "lat": 22.7010,
+    "lon": 90.3535,
+    "temperature_c": 28,
+    "humidity": 72,
+    "condition": "Cloudy",
+    "wind_kph": 13,
+    "visibility_km": 8,
+    "updated_at": "2025-11-23 16:00"
+  },
+  {
+    "division": "Sylhet",
+    "lat": 24.8949,
+    "lon": 91.8687,
+    "temperature_c": 26,
+    "humidity": 80,
+    "condition": "Rainy",
+    "wind_kph": 9,
+    "visibility_km": 7,
+    "updated_at": "2025-11-23 16:00"
+  },
+  {
+    "division": "Rangpur",
+    "lat": 25.7439,
+    "lon": 89.2752,
+    "temperature_c": 25,
+    "humidity": 60,
+    "condition": "Clear",
+    "wind_kph": 8,
+    "visibility_km": 12,
+    "updated_at": "2025-11-23 16:00"
+  },
+  {
+    "division": "Mymensingh",
+    "lat": 24.7471,
+    "lon": 90.4203,
+    "temperature_c": 27,
+    "humidity": 67,
+    "condition": "Partly Sunny",
+    "wind_kph": 11,
+    "visibility_km": 10,
+    "updated_at": "2025-11-23 16:00"
+  },
+
+  {
+    "division": "Dhaka",
+    "lat": 23.8103,
+    "lon": 90.4125,
+    "temperature_c": 30,
+    "humidity": 78,
+    "condition": "Thunderstorm",
+    "wind_kph": 22,
+    "visibility_km": 6,
+    "updated_at": "2025-11-23 18:00"
+  },
+  {
+    "division": "Dhaka",
+    "lat": 23.8103,
+    "lon": 90.4125,
+    "temperature_c": 24,
+    "humidity": 90,
+    "condition": "Foggy",
+    "wind_kph": 4,
+    "visibility_km": 3,
+    "updated_at": "2025-11-23 06:00"
+  },
+  {
+    "division": "Chattogram",
+    "lat": 22.3569,
+    "lon": 91.7832,
+    "temperature_c": 31,
+    "humidity": 75,
+    "condition": "Hot & Humid",
+    "wind_kph": 15,
+    "visibility_km": 8,
+    "updated_at": "2025-11-23 18:00"
+  },
+  {
+    "division": "Chattogram",
+    "lat": 22.3569,
+    "lon": 91.7832,
+    "temperature_c": 27,
+    "humidity": 82,
+    "condition": "Rainy",
+    "wind_kph": 18,
+    "visibility_km": 5,
+    "updated_at": "2025-11-23 09:00"
+  },
+  {
+    "division": "Rajshahi",
+    "lat": 24.3745,
+    "lon": 88.6042,
+    "temperature_c": 33,
+    "humidity": 45,
+    "condition": "Heatwave",
+    "wind_kph": 9,
+    "visibility_km": 14,
+    "updated_at": "2025-11-23 15:00"
+  },
+  {
+    "division": "Rajshahi",
+    "lat": 24.3745,
+    "lon": 88.6042,
+    "temperature_c": 23,
+    "humidity": 75,
+    "condition": "Drizzle",
+    "wind_kph": 7,
+    "visibility_km": 10,
+    "updated_at": "2025-11-23 10:00"
+  },
+  {
+    "division": "Khulna",
+    "lat": 22.8456,
+    "lon": 89.5403,
+    "temperature_c": 29,
+    "humidity": 70,
+    "condition": "Windy",
+    "wind_kph": 20,
+    "visibility_km": 11,
+    "updated_at": "2025-11-23 17:00"
+  },
+  {
+    "division": "Khulna",
+    "lat": 22.8456,
+    "lon": 89.5403,
+    "temperature_c": 27,
+    "humidity": 85,
+    "condition": "Rainy",
+    "wind_kph": 14,
+    "visibility_km": 7,
+    "updated_at": "2025-11-23 07:00"
+  },
+  {
+    "division": "Barishal",
+    "lat": 22.7010,
+    "lon": 90.3535,
+    "temperature_c": 29,
+    "humidity": 88,
+    "condition": "Thunderstorm",
+    "wind_kph": 21,
+    "visibility_km": 6,
+    "updated_at": "2025-11-23 16:30"
+  },
+  {
+    "division": "Barishal",
+    "lat": 22.7010,
+    "lon": 90.3535,
+    "temperature_c": 25,
+    "humidity": 92,
+    "condition": "Heavy Rain",
+    "wind_kph": 16,
+    "visibility_km": 5,
+    "updated_at": "2025-11-23 08:00"
+  },
+  {
+    "division": "Sylhet",
+    "lat": 24.8949,
+    "lon": 91.8687,
+    "temperature_c": 24,
+    "humidity": 88,
+    "condition": "Foggy",
+    "wind_kph": 6,
+    "visibility_km": 2,
+    "updated_at": "2025-11-23 06:00"
+  },
+  {
+    "division": "Sylhet",
+    "lat": 24.8949,
+    "lon": 91.8687,
+    "temperature_c": 28,
+    "humidity": 70,
+    "condition": "Thunderstorm",
+    "wind_kph": 19,
+    "visibility_km": 7,
+    "updated_at": "2025-11-23 19:00"
+  },
+  {
+    "division": "Rangpur",
+    "lat": 25.7439,
+    "lon": 89.2752,
+    "temperature_c": 22,
+    "humidity": 92,
+    "condition": "Foggy",
+    "wind_kph": 5,
+    "visibility_km": 3,
+    "updated_at": "2025-11-23 05:00"
+  },
+  {
+    "division": "Rangpur",
+    "lat": 25.7439,
+    "lon": 89.2752,
+    "temperature_c": 26,
+    "humidity": 65,
+    "condition": "Cloudy",
+    "wind_kph": 9,
+    "visibility_km": 11,
+    "updated_at": "2025-11-23 13:00"
+  },
+  {
+    "division": "Mymensingh",
+    "lat": 24.7471,
+    "lon": 90.4203,
+    "temperature_c": 25,
+    "humidity": 76,
+    "condition": "Drizzle",
+    "wind_kph": 10,
+    "visibility_km": 9,
+    "updated_at": "2025-11-23 09:00"
+  },
+  {
+    "division": "Mymensingh",
+    "lat": 24.7471,
+    "lon": 90.4203,
+    "temperature_c": 29,
+    "humidity": 60,
+    "condition": "Hazy",
+    "wind_kph": 12,
+    "visibility_km": 11,
+    "updated_at": "2025-11-23 14:00"
+  }
+]
