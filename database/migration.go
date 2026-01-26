@@ -16,6 +16,7 @@ func autoMigrate() error {
 	}
 
 
+
 	for _, model := range models {
 		if err := DB.AutoMigrate(model); err != nil {
 			return fmt.Errorf("failed to migrate %T: %w", model, err)
@@ -23,4 +24,5 @@ func autoMigrate() error {
 	}
 
 	return nil
+	
 }

@@ -10,7 +10,8 @@ import (
 	"go-fiber-api/models"
 )
 
-// GET /api/weather  -> list (filters + pagination)
+
+// GET /api/weather -> list (filters + pagination)
 func ListWeatherDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var rows []models.Weather
@@ -53,6 +54,8 @@ func ListWeatherDB(db *gorm.DB) fiber.Handler {
 	}
 }
 
+
+
 	// GET /api/weather/:id  -> by numeric id
 	func GetWeatherByIDDB(db *gorm.DB) fiber.Handler {
 		return func(c *fiber.Ctx) error {
@@ -71,20 +74,22 @@ func ListWeatherDB(db *gorm.DB) fiber.Handler {
 		}
 	}
 
-// GET /api/weather/division/:division  -> by unique division
-func GetWeatherByDivisionDB(db *gorm.DB) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		division := strings.TrimSpace(c.Params("division"))
-		if division == "" {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid division"})
-		}
-		var w models.Weather
-		if err := db.Where("division ILIKE ?", division).First(&w).Error; err != nil {
-			if err == gorm.ErrRecordNotFound {
-				return c.Status(404).JSON(fiber.Map{"error": "weather not found"})
+
+
+	// GET /api/weather/division/:division  -> by unique division
+	func GetWeatherByDivisionDB(db *gorm.DB) fiber.Handler {
+		return func(c *fiber.Ctx) error {
+			division := strings.TrimSpace(c.Params("division"))
+			if division == "" {
+				return c.Status(400).JSON(fiber.Map{"error": "invalid division"})
 			}
-			return c.Status(500).JSON(fiber.Map{"error": "db error"})
+			var w models.Weather
+			if err := db.Where("division ILIKE ?", division).First(&w).Error; err != nil {
+				if err == gorm.ErrRecordNotFound {
+					return c.Status(404).JSON(fiber.Map{"error": "weather not found"})
+				}
+				return c.Status(500).JSON(fiber.Map{"error": "db error"})
+			}
+			return c.JSON(w)
 		}
-		return c.JSON(w)
 	}
-}

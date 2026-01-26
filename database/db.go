@@ -68,11 +68,11 @@ func GetDB() *gorm.DB {
 	return DB
 }
 
-
 // ConnectDB is a legacy function for backward compatibility
 func ConnectDB() (*gorm.DB, error) {
 	return InitDB()
 }
+
 
 // Ping checks the database connection
 func Ping(db *gorm.DB) error {
