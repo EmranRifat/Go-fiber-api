@@ -48,7 +48,7 @@ func (j *JWTManager) Sign(userID int, email string) (string, error) {
 			Subject:   fmt.Sprint(userID),            // user id as string
 			Issuer:    j.iss,                         // issuer
 			IssuedAt:  jwt.NewNumericDate(now),       // iat
-			ExpiresAt: jwt.NewNumericDate(now.Add(j.ttl)), //exp
+			ExpiresAt: jwt.NewNumericDate(now.Add(j.ttl)), //exp  
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

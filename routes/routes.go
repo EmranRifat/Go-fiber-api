@@ -35,7 +35,7 @@ func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 
 	// Orders (PUBLIC)
 	api.Get("/orders", handlers.GetAllOrders(db))
-	api.Get("/orders/:order_id", handlers.GetOrderByID(db))
+	api.Get("/orders/:id", handlers.GetOrderByID(db))
 
 	// -------- Weather (public) --------
 	api.Get("/weather",                    controllers.ListWeatherDB(db))          // list + filters

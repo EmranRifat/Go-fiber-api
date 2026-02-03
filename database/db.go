@@ -18,7 +18,7 @@ func InitDB() (*gorm.DB, error) {
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("Warning: Error loading .env file")
 	}
-
+	
 	// Get database configuration from environment variables
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")

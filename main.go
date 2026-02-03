@@ -9,9 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	fiberlogger "github.com/gofiber/fiber/v2/middleware/logger"
-
 	"github.com/gofiber/template/html/v2"
-
 	"go-fiber-api/config"
 	"go-fiber-api/database"
 	"go-fiber-api/logger"
@@ -28,19 +26,21 @@ func main() {
 
 	cfg := config.Load()
 	jwtm := security.NewJWTManager(cfg.JWTSecret, cfg.JWTExpiresHours)
-	
+
 	// DB connect
 	db, err := database.ConnectDB()
 	if err != nil {
 		logger.Error("Failed to connect to database", err)
 		return
 	}
+
 	if err := database.Ping(db); err != nil {
 		logger.Error("DB ping failed", err)
 		return
 	}
-	logger.Success("DB Connection OK 👍")
 
+	logger.Success("DB Connection OK 👍")
+	// Auto migrate
 	// Setup HTML Engine
 	engine := html.New("./views", ".html")
 
@@ -67,12 +67,15 @@ func main() {
 		return c.SendString("🚀 Go Fiber API running...")
 	})
 
+
+
 	app.Get("/api/db/ping", func(c *fiber.Ctx) error {
 		if err := database.Ping(db); err != nil {
 			return c.Status(500).JSON(fiber.Map{"db": "down", "detail": err.Error()})
 		}
 		return c.JSON(fiber.Map{"db": "ok"})
 	})
+
 
 	routes.ManageRoutes(app, jwtm, db)
 

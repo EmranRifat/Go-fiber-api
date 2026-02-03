@@ -8,10 +8,10 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
+
 
 // SeedData seeds the database with initial data from JSON files
 func SeedData(db *gorm.DB) error {
@@ -37,6 +37,7 @@ func SeedData(db *gorm.DB) error {
 	logger.Success("✅ Database seeding completed successfully")
 	return nil
 }
+
 
 
 // SeedProductsFromJSON reads products from assets/product.json and seeds them
@@ -67,6 +68,7 @@ func SeedProductsFromJSON(db *gorm.DB) error {
 	}
 	defer file.Close()
 
+	
 	// Decode JSON
 	var productsData []struct {
 		ID          uint    `json:"id"`
