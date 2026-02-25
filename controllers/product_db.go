@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,26 +13,26 @@ import (
 	"go-fiber-api/types"
 )
 
-	var Products = []types.Products{
-		{
-			ID:          1,
-			Name:        "Mechanical Keyboard",
-			Price:       49.99,
-			Category:    "Accessories",
-			Description: "Durable mechanical keyboard with RGB backlight and tactile switches for gaming and productivity.",
-			Brand:       "Keychron",
-		},
-		{
-			ID:          2,
-			Name:        "Wireless Mouse",
-			Price:       19.99,
-			Category:    "Accessories",
-			Description: "Lightweight wireless mouse with ergonomic design and long-lasting battery life.",
-			Brand:       "Logitech",
-		},
-	
-	}
-	
+// var Products = []types.Products{
+// 	{
+// 		ID:          1,
+// 		Name:        "Mechanical Keyboard",
+// 		Price:       49.99,
+// 		Category:    "Accessories",
+// 		Description: "Durable mechanical keyboard with RGB backlight and tactile switches for gaming and productivity.",
+// 		Brand:       "Keychron",
+// 	},
+// 	{
+// 		ID:          2,
+// 		Name:        "Wireless Mouse",
+// 		Price:       19.99,
+// 		Category:    "Accessories",
+// 		Description: "Lightweight wireless mouse with ergonomic design and long-lasting battery life.",
+// 		Brand:       "Logitech",
+// 	},
+
+// }
+
 // const productsFile = "assets/product.json" // <- keep the filename consistent
 
 // thread-safe in-memory store
@@ -46,14 +47,64 @@ var (
 )
 
 
+func ListProductsDB(db *gorm.DB) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var products []models.Product
+
+		// Query params
+		q := strings.TrimSpace(c.Query("q", ""))
+		println("Search query:", q)
+		page := c.QueryInt("page", 1)
+		limit := c.QueryInt("limit", 20)
+
+		// Clamp values
+		if page < 1 {
+			page = 1
+		}
+		if limit < 1 || limit > 100 {
+			limit = 20
+		}
+		offset := (page - 1) * limit
+
+		// Build query
+		tx := db.Model(&models.Product{})
+		if q != "" {
+			tx = tx.Where("LOWER(name) LIKE ?", "%"+strings.ToLower(q)+"%")
+		}
+
+		// Count total records
+		var total int64
+		if err := tx.Count(&total).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": "Failed to count products",
+			})
+		}
+
+		// Apply pagination and fetch results
+		if err := tx.Order("id ASC").Limit(limit).Offset(offset).Find(&products).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": "Failed to retrieve products",
+			})
+		}
+
+		// Response
+		return c.JSON(fiber.Map{
+			"success": true,
+			"count":   len(products),
+			"total":   total,
+			"data":    products,
+		})
+	}
+}
 
 // GET /api/product  -> list (with optional ?q= and pagination)
-func ListProductsDB(db *gorm.DB) fiber.Handler {
+func ListProductsDB1(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var items []models.Product
 		
 		// optional filters
 		q := c.Query("q")
+		println("Search query:", q)
 		page, limit := c.QueryInt("page", 1), c.QueryInt("limit", 20)
 		if page < 1 { page = 1 }
 		if limit < 1 || limit > 100 { limit = 20 }
@@ -72,6 +123,24 @@ func ListProductsDB(db *gorm.DB) fiber.Handler {
 }
 
 
+func ListProductsDB2(db *gorm.DB) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var products []models.Product
+
+		if err := db.Find(&products).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": "Failed to retrieve products",
+
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"success": true,
+			"count":   len(products),
+			"data":    products,
+		})
+	}
+}
 
 
 
@@ -130,7 +199,6 @@ func CreateProductDB(db *gorm.DB) fiber.Handler {
 		})
 	}
 }
-
 
 
 
@@ -207,7 +275,6 @@ func DeleteProduct(c *fiber.Ctx) error {
 	if err != nil || id < 1 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 	}
-
 	mu.Lock()
 	defer mu.Unlock()
 	if _, ok := products[id]; !ok {
@@ -215,4 +282,5 @@ func DeleteProduct(c *fiber.Ctx) error {
 	}
 	delete(products, id)
 	return c.JSON(fiber.Map{"message": "deleted"})
+
 }

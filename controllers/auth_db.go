@@ -26,47 +26,51 @@ func normalizeEmail(s string) string {
 }
 
 
-// POST /api/auth/register  (DB)
+ // POST /api/auth/register (DB)
 func RegisterDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+
 		var in types.RegisterInput
 		if err := c.BodyParser(&in); err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid body"})
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "invalid body",
+			})
 		}
 
 		in.Email = normalizeEmail(in.Email)
+
 		if in.Name == "" || !strings.Contains(in.Email, "@") || len(in.Password) < 6 {
 			return c.Status(fiber.StatusUnprocessableEntity).JSON(
 				fiber.Map{"error": "name required, valid email, password>=6"},
 			)
 		}
-		
-		// conflict check (case-insensitive)
-		var exists models.User
-		if err := db.Where("LOWER(email) = ?", in.Email).First(&exists).Error; err == nil {
-			return c.Status(fiber.StatusConflict).JSON(fiber.Map{"error": "email already registered"})
-		} else if err != gorm.ErrRecordNotFound {
-			return c.Status(500).JSON(fiber.Map{"error": "db error"})
-		}
 
-		// hash password
+		// Hash password
 		hash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "hashing error"})
+			return fiber.ErrInternalServerError
 		}
 
 		u := models.User{
 			Name:         in.Name,
-			Email:        in.Email,         // already normalized
+			Email:        in.Email,
 			PasswordHash: string(hash),
 		}
 
+		// 🔥Try insert directly (DB enforces uniqueness)
 		if err := db.Create(&u).Error; err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "db error"})
+
+			// Duplicate email error
+			if strings.Contains(err.Error(), "duplicate") ||
+				strings.Contains(err.Error(), "unique") {
+				return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+					"error": "email already registered",
+				})
+			}
+
+			return fiber.ErrInternalServerError
 		}
 
-		
-		// never return password hash
 		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 			"user": fiber.Map{
 				"id":    u.ID,
@@ -117,7 +121,7 @@ func LoginDB(jwtm *security.JWTManager, db *gorm.DB) fiber.Handler {
 		// 	"last_login_at": time.Now(),
 		// 	"login_count":   gorm.Expr("login_count + 1"),
 		// }).Error
-
+		
 		// 5) return token + public user info
 		return c.JSON(fiber.Map{
 			"token": tok,

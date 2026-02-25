@@ -24,7 +24,10 @@ func main() {
 		log.Println("⚠️.env file not loaded")
 	}
 
-	cfg := config.Load()
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatal("Config load failed:", err)
+	}
 	jwtm := security.NewJWTManager(cfg.JWTSecret, cfg.JWTExpiresHours)
 
 	// DB connect
@@ -66,7 +69,6 @@ func main() {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("🚀 Go Fiber API running...")
 	})
-
 
 
 	app.Get("/api/db/ping", func(c *fiber.Ctx) error {

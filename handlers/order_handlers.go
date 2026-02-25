@@ -29,7 +29,7 @@ func GetAllOrders(db *gorm.DB) fiber.Handler {
 
 
 
-// GetOrderByID retrieves a single order by its order_id
+// GetOrderByID retrieves a single order by its id
 func GetOrderByID(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		orderID := c.Params("id")
