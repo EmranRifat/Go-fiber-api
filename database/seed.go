@@ -8,10 +8,11 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
-
 
 // SeedData seeds the database with initial data from JSON files
 func SeedData(db *gorm.DB) error {
@@ -44,7 +45,6 @@ func SeedData(db *gorm.DB) error {
 func SeedProductsFromJSON(db *gorm.DB) error {
 	logger.Success("📦 Seeding products from JSON...")
 
-	// Check if products already exist
 	var count int64
 	if err := db.Model(&models.Product{}).Count(&count).Error; err != nil {
 		return fmt.Errorf("failed to count products: %w", err)
@@ -55,57 +55,94 @@ func SeedProductsFromJSON(db *gorm.DB) error {
 		return nil
 	}
 
-	// Read JSON file
 	projectRoot, err := os.Getwd()
 	if err != nil {
-		return fmt.Errorf("failed to get working directory: %w", err)
+		return err
 	}
 
 	filePath := filepath.Join(projectRoot, "assets", "product.json")
 	file, err := os.Open(filePath)
 	if err != nil {
-		return fmt.Errorf("failed to open product.json: %w", err)
+		return err
 	}
 	defer file.Close()
 
-	
-	// Decode JSON
 	var productsData []struct {
-		ID          uint    `json:"id"`
-		Name        string  `json:"name"`
-		Price       float64 `json:"price"`
-		Category    string  `json:"category"`
-		Description string  `json:"description"`
-		Brand       string  `json:"brand"`
+		ID                string  `json:"id"`
+		ProductCategoryID string  `json:"product_category_id"`
+		Name              string  `json:"name"`
+		Price             float64 `json:"price"`
+		Image             string  `json:"image"`
+		Description       string  `json:"description"`
+		Manufacturer      string  `json:"manufacturer"`
+
+		ProductCategory struct {
+			ID   string `json:"id"`
+			Name string `json:"name"`
+		} `json:"product_category"`
 	}
 
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&productsData); err != nil {
-		return fmt.Errorf("failed to decode product.json: %w", err)
+	if err := json.NewDecoder(file).Decode(&productsData); err != nil {
+		return err
 	}
 
-	// Convert to Product models
-	products := make([]models.Product, len(productsData))
-	for i, p := range productsData {
-		products[i] = models.Product{
-			ID:      p.ID,
-			Name:    p.Name,
-			Price:   p.Price,
-			InStock: true,
+	var products []models.Product
+
+	for _, p := range productsData {
+
+		// 🔹 Convert string → uuid.UUID
+		productID, err := uuid.Parse(p.ID)
+		if err != nil {
+			return fmt.Errorf("invalid product uuid: %w", err)
 		}
+
+		categoryID, err := uuid.Parse(p.ProductCategoryID)
+		if err != nil {
+			return fmt.Errorf("invalid category uuid: %w", err)
+		}
+
+		// 🔹 Insert category safely
+		db.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "id"}},
+			DoNothing: true,
+		}).Create(&models.ProductCategory{
+			ID:   categoryID,
+			Name: p.ProductCategory.Name,
+		})
+
+		// 🔹 Append product
+		products = append(products, models.Product{
+			ID:                productID,
+			ProductCategoryID: categoryID,
+			Name:              p.Name,
+			Price:             p.Price,
+			Image:             p.Image,
+			Description:       p.Description,
+			Manufacturer:      p.Manufacturer,
+		})
 	}
 
-	// Insert products with upsert
+	// 🔹 Bulk Insert
 	if err := db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
 		DoNothing: true,
 	}).Create(&products).Error; err != nil {
-		return fmt.Errorf("failed to seed products: %w", err)
+		return err
 	}
 
 	logger.Success(fmt.Sprintf("✅ Successfully seeded %d products", len(products)))
 	return nil
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

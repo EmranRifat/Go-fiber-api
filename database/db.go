@@ -59,7 +59,6 @@ func InitDB() (*gorm.DB, error) {
 		fmt.Println("Warning: Failed to seed database:", err)
 		// Don't return error, seeding is optional
 	}
-
 	return DB, nil
 }
 

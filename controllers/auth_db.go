@@ -55,11 +55,11 @@ func RegisterDB(db *gorm.DB) fiber.Handler {
 			Name:         in.Name,
 			Email:        in.Email,
 			PasswordHash: string(hash),
+			Role:         "user",
 		}
 
 		// 🔥Try insert directly (DB enforces uniqueness)
 		if err := db.Create(&u).Error; err != nil {
-
 			// Duplicate email error
 			if strings.Contains(err.Error(), "duplicate") ||
 				strings.Contains(err.Error(), "unique") {
@@ -67,7 +67,6 @@ func RegisterDB(db *gorm.DB) fiber.Handler {
 					"error": "email already registered",
 				})
 			}
-
 			return fiber.ErrInternalServerError
 		}
 
@@ -76,8 +75,9 @@ func RegisterDB(db *gorm.DB) fiber.Handler {
 				"id":    u.ID,
 				"name":  u.Name,
 				"email": u.Email,
+				"role":  u.Role,
 			},
-			"message": "user registered",
+			"message": "user registered successfully",
 		})
 	}
 }
@@ -125,7 +125,12 @@ func LoginDB(jwtm *security.JWTManager, db *gorm.DB) fiber.Handler {
 		// 5) return token + public user info
 		return c.JSON(fiber.Map{
 			"token": tok,
-			"user":  fiber.Map{"id": u.ID, "name": u.Name, "email": u.Email},
+			"user":  fiber.Map{
+				"id": u.ID, 
+				"name": u.Name, 
+				"email": u.Email,
+				"role":  u.Role,
+			},
 		})
 	}
 }

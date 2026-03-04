@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	// "strings"
 	"sync"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,29 +15,6 @@ import (
 	"go-fiber-api/types"
 )
 
-// var Products = []types.Products{
-// 	{
-// 		ID:          1,
-// 		Name:        "Mechanical Keyboard",
-// 		Price:       49.99,
-// 		Category:    "Accessories",
-// 		Description: "Durable mechanical keyboard with RGB backlight and tactile switches for gaming and productivity.",
-// 		Brand:       "Keychron",
-// 	},
-// 	{
-// 		ID:          2,
-// 		Name:        "Wireless Mouse",
-// 		Price:       19.99,
-// 		Category:    "Accessories",
-// 		Description: "Lightweight wireless mouse with ergonomic design and long-lasting battery life.",
-// 		Brand:       "Logitech",
-// 	},
-
-// }
-
-// const productsFile = "assets/product.json" // <- keep the filename consistent
-
-// thread-safe in-memory store
 var (
 	mu sync.RWMutex
 	products = map[int]types.Product{
@@ -98,32 +77,32 @@ func ListProductsDB(db *gorm.DB) fiber.Handler {
 }
 
 // GET /api/product  -> list (with optional ?q= and pagination)
-func ListProductsDB1(db *gorm.DB) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		var items []models.Product
+// func ListProductsDB(db *gorm.DB) fiber.Handler {
+// 	return func(c *fiber.Ctx) error {
+// 		var items []models.Product
 		
-		// optional filters
-		q := c.Query("q")
-		println("Search query:", q)
-		page, limit := c.QueryInt("page", 1), c.QueryInt("limit", 20)
-		if page < 1 { page = 1 }
-		if limit < 1 || limit > 100 { limit = 20 }
-		offset := (page - 1) * limit
+// 		// optional filters
+// 		q := c.Query("q")
+// 		println("Search query:", q)
+// 		page, limit := c.QueryInt("page", 1), c.QueryInt("limit", 20)
+// 		if page < 1 { page = 1 }
+// 		if limit < 1 || limit > 100 { limit = 20 }
+// 		offset := (page - 1) * limit
 
-		tx := db.Model(&models.Product{})
-		if q != "" {
-			tx = tx.Where("name ILIKE ?", "%"+q+"%")
-		}
+// 		tx := db.Model(&models.Product{})
+// 		if q != "" {
+// 			tx = tx.Where("name ILIKE ?", "%"+q+"%")
+// 		}
 
-		if err := tx.Order("id ASC").Limit(limit).Offset(offset).Find(&items).Error; err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "db error"})
-		}
-		return c.JSON(items)
-	}
-}
+// 		if err := tx.Order("id ASC").Limit(limit).Offset(offset).Find(&items).Error; err != nil {
+// 			return c.Status(500).JSON(fiber.Map{"error": "db error"})
+// 		}
+// 		return c.JSON(items)
+// 	}
+// }
 
-
-func ListProductsDB2(db *gorm.DB) fiber.Handler {
+// direct DB version without search/pagination for simplicity
+func ListProductsDB1(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var products []models.Product
 
@@ -181,7 +160,7 @@ func CreateProductDB(db *gorm.DB) fiber.Handler {
 		p := models.Product{
 			Name:    in.Name,
 			Price:   in.Price,
-			InStock: in.InStock,
+			// InStock: in.InStock,
 		}
 		
 		if err := db.Create(&p).Error; err != nil {
