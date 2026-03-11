@@ -38,21 +38,20 @@ func NewJWTManager(secret string, hours int) *JWTManager {
 }
 
 
-
-// Sign creates a JWT for the given user id + email.
-func (j *JWTManager) Sign(userID int, email string) (string, error) {
-	now := time.Now()
-	claims := &Claims{
-		Email: email,
-		RegisteredClaims: jwt.RegisteredClaims{
-			Subject:   fmt.Sprint(userID),            // user id as string
-			Issuer:    j.iss,                         // issuer
-			IssuedAt:  jwt.NewNumericDate(now),       // iat
-			ExpiresAt: jwt.NewNumericDate(now.Add(j.ttl)), //exp  
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(j.secret)
+	// Sign creates a JWT for the given user id + email.
+func (j *JWTManager) Sign(userID int, email string) (string, error){
+		now := time.Now()
+		claims := &Claims{
+			Email: email,
+			RegisteredClaims: jwt.RegisteredClaims{
+				Subject:   fmt.Sprint(userID),            // user id as string
+				Issuer:    j.iss,                         // issuer
+				IssuedAt:  jwt.NewNumericDate(now),       // iat
+				ExpiresAt: jwt.NewNumericDate(now.Add(j.ttl)), //exp  
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		return token.SignedString(j.secret)
 }
 
 

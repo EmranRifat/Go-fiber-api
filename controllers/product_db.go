@@ -76,6 +76,7 @@ func ListProductsDB(db *gorm.DB) fiber.Handler {
 	}
 }
 
+
 // GET /api/product  -> list (with optional ?q= and pagination)
 // func ListProductsDB(db *gorm.DB) fiber.Handler {
 // 	return func(c *fiber.Ctx) error {
@@ -125,24 +126,40 @@ func ListProductsDB1(db *gorm.DB) fiber.Handler {
 
 
 // GET /api/product/:id -> detail
+// func GetProductByIDDB(db *gorm.DB) fiber.Handler {
+// 	return func(c *fiber.Ctx) error {
+// 		id, err := strconv.Atoi(c.Params("id"))
+// 		if err != nil || id < 1 {
+// 			return c.Status(400).JSON(fiber.Map{"error": "invalid id"})
+// 		}
+// 		var p models.Product
+
+// 		if err := db.First(&p, id).Error; err != nil {
+// 			if err == gorm.ErrRecordNotFound {
+// 				return c.Status(404).JSON(fiber.Map{"error": "product not found"})
+// 			}
+// 			return c.Status(500).JSON(fiber.Map{"error": "db error"})
+// 		}
+// 		return c.JSON(p)
+// 	}
+// }
 func GetProductByIDDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		id, err := strconv.Atoi(c.Params("id"))
-		if err != nil || id < 1 {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid id"})
-		}
+
+		id := c.Params("id")
+
 		var p models.Product
 
-		if err := db.First(&p, id).Error; err != nil {
+		if err := db.First(&p, "id = ?", id).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				return c.Status(404).JSON(fiber.Map{"error": "product not found"})
 			}
 			return c.Status(500).JSON(fiber.Map{"error": "db error"})
 		}
+
 		return c.JSON(p)
 	}
 }
-
 
 
 

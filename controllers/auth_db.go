@@ -104,7 +104,7 @@ func LoginDB(jwtm *security.JWTManager, db *gorm.DB) fiber.Handler {
 			}
 			return c.Status(500).JSON(fiber.Map{"error": "db error"})
 		}
-
+		
 		// 2) verify password
 		if err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(in.Password)); err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "invalid credentials"})
@@ -116,14 +116,7 @@ func LoginDB(jwtm *security.JWTManager, db *gorm.DB) fiber.Handler {
 			return c.Status(500).JSON(fiber.Map{"error": "token issue"})
 		}
 
-		// // 4) optional: update login metadata
-		// _ = db.Model(&u).Updates(map[string]any{
-		// 	"last_login_at": time.Now(),
-		// 	"login_count":   gorm.Expr("login_count + 1"),
-		// }).Error
-		
-		// 5) return token + public user info
-		return c.JSON(fiber.Map{
+			return c.JSON(fiber.Map{
 			"token": tok,
 			"user":  fiber.Map{
 				"id": u.ID, 
