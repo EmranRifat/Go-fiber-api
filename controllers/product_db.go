@@ -123,8 +123,6 @@ func ListProductsDB1(db *gorm.DB) fiber.Handler {
 }
 
 
-
-
 // GET /api/product/:id -> detail
 // func GetProductByIDDB(db *gorm.DB) fiber.Handler {
 // 	return func(c *fiber.Ctx) error {
@@ -143,6 +141,7 @@ func ListProductsDB1(db *gorm.DB) fiber.Handler {
 // 		return c.JSON(p)
 // 	}
 // }
+
 func GetProductByIDDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 

@@ -53,8 +53,13 @@ func main() {
 	})
 
 	app.Use(fiberlogger.New())
-	app.Use(cors.New())
-
+	// app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+    AllowOrigins:     "http://localhost:3000",
+    AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+    AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    AllowCredentials: true,
+}))
 
 	// Routes
 	app.Get("/api/health", func(c *fiber.Ctx) error {
