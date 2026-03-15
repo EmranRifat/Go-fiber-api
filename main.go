@@ -5,16 +5,17 @@ import (
 	"log"
 
 	"github.com/joho/godotenv"
-	
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	fiberlogger "github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/template/html/v2"
+
 	"go-fiber-api/config"
 	"go-fiber-api/database"
 	"go-fiber-api/logger"
 	"go-fiber-api/routes"
 	"go-fiber-api/security"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	fiberlogger "github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/template/html/v2"
 )
 
 func main() {
@@ -52,13 +53,12 @@ func main() {
 		Views:   engine,
 	})
 
-	app.Use(fiberlogger.New())
-	// app.Use(cors.New())
-	app.Use(cors.New(cors.Config{
-    AllowOrigins:     "http://localhost:3000",
-    AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-    AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-    AllowCredentials: true,
+		app.Use(cors.New(cors.Config{
+	    AllowOrigins: "http://localhost:3000,http://127.0.0.1:3000,http://192.168.1.71:3000",
+	    AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+	    AllowMethods: "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+	    AllowCredentials: true,
+
 }))
 
 	// Routes
@@ -84,13 +84,14 @@ func main() {
 	})
 
 
-	routes.ManageRoutes(app, jwtm, db)
+		routes.ManageRoutes(app, jwtm, db)
 
-	addr := fmt.Sprintf(":%s", cfg.AppPort)
-	logger.Success(fmt.Sprintf("🚀Server is running at http://localhost%s", addr))
-	
+		addr := fmt.Sprintf("0.0.0.0:%s", cfg.AppPort)
+        app.Listen(addr)
+
+	 logger.Success(fmt.Sprintf("🚀 Server running on %s", addr))
+
 	if err := app.Listen(addr); err != nil {
 		logger.Error("Failed to start server", err)
-		return
 	}
-}
+	}
