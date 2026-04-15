@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"strings"
-	"sync"
+	// "sync"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
@@ -13,12 +13,12 @@ import (
 	"go-fiber-api/types"
 )
 
-var (
-	userMu     sync.RWMutex
-	usersByID  = map[int]*types.User{}
-	usersByEM  = map[string]*types.User{} // key = lowercase email
-	nextUserID = 1
-)
+// var (
+// 	userMu     sync.RWMutex
+// 	usersByID  = map[int]*types.User{}
+// 	usersByEM  = map[string]*types.User{} // key = lowercase email
+// 	nextUserID = 1
+// )
 
 
 func normalizeEmail(s string) string {
@@ -26,29 +26,43 @@ func normalizeEmail(s string) string {
 }
 
 
- // POST /api/auth/register (DB)
+// POST /api/auth/register (DB)
 func RegisterDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
 		var in types.RegisterInput
+
+		// ❌ Invalid Body
 		if err := c.BodyParser(&in); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "invalid body",
+				"status":      "error",
+				"status_code": fiber.StatusBadRequest,
+				"message":     "Invalid request body",
+				"error":       err.Error(),
 			})
 		}
 
 		in.Email = normalizeEmail(in.Email)
 
+		// ❌ Validation Error
 		if in.Name == "" || !strings.Contains(in.Email, "@") || len(in.Password) < 6 {
-			return c.Status(fiber.StatusUnprocessableEntity).JSON(
-				fiber.Map{"error": "name required, valid email, password>=6"},
-			)
+			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+				"status":      "error",
+				"status_code": fiber.StatusUnprocessableEntity,
+				"message":     "Validation failed",
+				"error":       "name required, valid email, password >= 6",
+			})
 		}
 
-		// Hash password
+		// 🔐 Hash password
 		hash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
 		if err != nil {
-			return fiber.ErrInternalServerError
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"status":      "error",
+				"status_code": fiber.StatusInternalServerError,
+				"message":     "Failed to process password",
+				"error":       err.Error(),
+			})
 		}
 
 		u := models.User{
@@ -58,29 +72,44 @@ func RegisterDB(db *gorm.DB) fiber.Handler {
 			Role:         "user",
 		}
 
-		// 🔥Try insert directly (DB enforces uniqueness)
+		// 🔥 Insert user
 		if err := db.Create(&u).Error; err != nil {
-			// Duplicate email error
+
+			// ❌ Duplicate Email
 			if strings.Contains(err.Error(), "duplicate") ||
 				strings.Contains(err.Error(), "unique") {
 				return c.Status(fiber.StatusConflict).JSON(fiber.Map{
-					"error": "email already registered",
+					"status":      "error",
+					"status_code": fiber.StatusConflict,
+					"message":     "Email already registered",
+					"error":       err.Error(),
 				})
 			}
-			return fiber.ErrInternalServerError
+
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"status":      "error",
+				"status_code": fiber.StatusInternalServerError,
+				"message":     "Failed to register user",
+				"error":       err.Error(),
+			})
 		}
 
+		// ✅ Success Response (NO status_code)
 		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-			"user": fiber.Map{
-				"id":    u.ID,
-				"name":  u.Name,
-				"email": u.Email,
-				"role":  u.Role,
+			"status":  "success",
+			"message": "User registered successfully",
+			"data": fiber.Map{
+				"user": fiber.Map{
+					"id":    u.ID,
+					"name":  u.Name,
+					"email": u.Email,
+					"role":  u.Role,
+				},
 			},
-			"message": "user registered successfully",
 		})
 	}
 }
+
 
 
  

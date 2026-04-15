@@ -3,11 +3,8 @@ package controllers
 import (
 	"fmt"
 	"strconv"
-	"strings"
-
-	// "strings"
 	"sync"
-
+	"strings"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 
@@ -26,32 +23,30 @@ var (
 )
 
 
+
 func ListProductsDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var products []models.Product
 
-		// Query params
 		q := strings.TrimSpace(c.Query("q", ""))
-		println("Search query:", q)
 		page := c.QueryInt("page", 1)
-		limit := c.QueryInt("limit", 20)
+		limit := c.QueryInt("limit", 10)
 
-		// Clamp values
 		if page < 1 {
 			page = 1
 		}
 		if limit < 1 || limit > 100 {
-			limit = 20
+			limit = 10
 		}
+
 		offset := (page - 1) * limit
 
-		// Build query
 		tx := db.Model(&models.Product{})
+
 		if q != "" {
 			tx = tx.Where("LOWER(name) LIKE ?", "%"+strings.ToLower(q)+"%")
 		}
 
-		// Count total records
 		var total int64
 		if err := tx.Count(&total).Error; err != nil {
 			return c.Status(500).JSON(fiber.Map{
@@ -59,19 +54,28 @@ func ListProductsDB(db *gorm.DB) fiber.Handler {
 			})
 		}
 
-		// Apply pagination and fetch results
-		if err := tx.Order("id ASC").Limit(limit).Offset(offset).Find(&products).Error; err != nil {
+		if err := tx.
+			Preload("ProductCategory").
+			Order("id ASC").
+			Limit(limit).
+			Offset(offset).
+			Find(&products).Error; err != nil {
 			return c.Status(500).JSON(fiber.Map{
 				"error": "Failed to retrieve products",
 			})
 		}
 
-		// Response
+		totalPages := int((total + int64(limit) - 1) / int64(limit))
+
 		return c.JSON(fiber.Map{
 			"success": true,
-			"count":   len(products),
-			"total":   total,
 			"data":    products,
+			"meta": fiber.Map{
+				"page":        page,
+				"limit":       limit,
+				"total":       total,
+				"total_pages": totalPages,
+			},
 		})
 	}
 }
@@ -103,24 +107,24 @@ func ListProductsDB(db *gorm.DB) fiber.Handler {
 // }
 
 // direct DB version without search/pagination for simplicity
-func ListProductsDB1(db *gorm.DB) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		var products []models.Product
+// func ListProductsDB1(db *gorm.DB) fiber.Handler {
+// 	return func(c *fiber.Ctx) error {
+// 		var products []models.Product
 
-		if err := db.Find(&products).Error; err != nil {
-			return c.Status(500).JSON(fiber.Map{
-				"error": "Failed to retrieve products",
+// 		if err := db.Find(&products).Error; err != nil {
+// 			return c.Status(500).JSON(fiber.Map{
+// 				"error": "Failed to retrieve products",
 
-			})
-		}
+// 			})
+// 		}
 
-		return c.JSON(fiber.Map{
-			"success": true,
-			"count":   len(products),
-			"data":    products,
-		})
-	}
-}
+// 		return c.JSON(fiber.Map{
+// 			"success": true,
+// 			"count":   len(products),
+// 			"data":    products,
+// 		})
+// 	}
+// }
 
 
 // GET /api/product/:id -> detail
@@ -144,12 +148,13 @@ func ListProductsDB1(db *gorm.DB) fiber.Handler {
 
 func GetProductByIDDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-
 		id := c.Params("id")
 
 		var p models.Product
 
-		if err := db.First(&p, "id = ?", id).Error; err != nil {
+		if err := db.Preload("ProductCategory").
+			First(&p, "id = ?", id).Error; err != nil {
+
 			if err == gorm.ErrRecordNotFound {
 				return c.Status(404).JSON(fiber.Map{"error": "product not found"})
 			}

@@ -7,8 +7,8 @@ import (
 )
 
 type Product struct {
-	ID                uuid.UUID `json:"id"`
-	ProductCategoryID uuid.UUID `json:"product_category_id"`
+	ID                uuid.UUID `json:"id" gorm:"type:uuid;primaryKey"`
+	ProductCategoryID uuid.UUID `json:"product_category_id" gorm:"type:uuid;not null"`
 	Name              string    `json:"name"`
 	Price             float64   `json:"price"`
 	Image             string    `json:"image"`
@@ -17,12 +17,5 @@ type Product struct {
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
 
-	ProductCategory ProductCategory `json:"product_category"`
-}
-
-type ProductCategory struct {
-	ID        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ProductCategory ProductCategory `json:"product_category" gorm:"foreignKey:ProductCategoryID;references:ID"`
 }
