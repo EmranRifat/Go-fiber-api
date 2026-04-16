@@ -6,7 +6,6 @@ import (
 	"go-fiber-api/handlers"
 	"go-fiber-api/middleware"
 	"go-fiber-api/security"
-
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -27,6 +26,10 @@ func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 
 	// Create
 	api.Post("/product",  controllers.CreateProductDB(db))
+
+	// Product Categories (PUBLIC)
+	api.Get("/product-categories", controllers.ProductCategories(db))
+    api.Get("/product-categories/:id", controllers.SingleProductCategory(db))
 	 
 	// (Optional) protected writes later:
 	// api.Put("/product/:id",   middleware.Protect(jwtm), controllers.UpdateProductDB(db))
