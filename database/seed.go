@@ -7,6 +7,7 @@ import (
 	"go-fiber-api/models"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,17 +19,18 @@ import (
 func SeedData(db *gorm.DB) error {
 	logger.Success("🌱 Starting database seeding...")
 
-	// Seed products from JSON
-	if err := SeedProductsFromJSON(db); err != nil {
-		logger.Error("Failed to seed products", err)
+	if err := SeedListingFromJSON(db); err != nil {
+		logger.Error("Failed to seed listings", err)
 		return err
 	}
-
+	return nil
+	
 	// Seed orders from JSON
 	if err := SeedOrdersFromJSON(db); err != nil {
 		logger.Error("Failed to seed orders", err)
 		return err
 	}
+
 	// Seed weather from JSON
 	if err := SeedWeatherFromJSON(db); err != nil {
 		logger.Error("Failed to seed weather", err)
@@ -41,99 +43,91 @@ func SeedData(db *gorm.DB) error {
 
 
 
-// SeedProductsFromJSON reads products from assets/product.json and seeds them
-func SeedProductsFromJSON(db *gorm.DB) error {
-	logger.Success("📦 Seeding products from JSON...")
+
+
+// SeedListingFromJSON reads listings from assets/listing.json and seeds them
+func SeedListingFromJSON(db *gorm.DB) error {
+	logger.Success("📦 Seeding listings from JSON...")
 
 	var count int64
-	if err := db.Model(&models.Product{}).Count(&count).Error; err != nil {
-		return fmt.Errorf("failed to count products: %w", err)
+	if err := db.Model(&models.Listing{}).Count(&count).Error; err != nil {
+		return fmt.Errorf("failed to count listings: %w", err)
 	}
 
 	if count > 0 {
-		logger.Info(fmt.Sprintf("Products already seeded (%d records), skipping...", count))
+		logger.Info(fmt.Sprintf("Listings already seeded (%d records), skipping...", count))
 		return nil
 	}
 
 	projectRoot, err := os.Getwd()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get working directory: %w", err)
 	}
 
-	filePath := filepath.Join(projectRoot, "assets", "product.json")
+	filePath := filepath.Join(projectRoot, "assets", "listing.json")
 	file, err := os.Open(filePath)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open listing.json: %w", err)
 	}
 	defer file.Close()
 
-	var productsData []struct {
-		ID                string  `json:"id"`
-		ProductCategoryID string  `json:"product_category_id"`
-		Name              string  `json:"name"`
-		Price             float64 `json:"price"`
-		Image             string  `json:"image"`
-		Description       string  `json:"description"`
-		Manufacturer      string  `json:"manufacturer"`
-
-		ProductCategory struct {
-			ID   string `json:"id"`
-			Name string `json:"name"`
-		} `json:"product_category"`
+	// ✅ flattened JSON structure
+	var listingsData []struct {
+		ID            string  `json:"id"`
+		Title         string  `json:"title"`
+		Description   string  `json:"description"`
+		PricePerNight float64 `json:"price_per_night"`
+		City          string  `json:"city"`
+		Country       string  `json:"country"`
+		Image         string  `json:"image"`
+		Rating        float64 `json:"rating"`
+		ReviewsCount  int     `json:"reviews_count"`
+		Category      string  `json:"category"`
+		HostName      string  `json:"host_name"`
+		IsSuperhost   bool    `json:"is_superhost"`
 	}
 
-	if err := json.NewDecoder(file).Decode(&productsData); err != nil {
-		return err
+	if err := json.NewDecoder(file).Decode(&listingsData); err != nil {
+		return fmt.Errorf("failed to decode listing json: %w", err)
 	}
 
-	var products []models.Product
+	var listings []models.Listing
 
-	for _, p := range productsData {
+	for _, l := range listingsData {
+		listingID := uuid.New()
 
-		// 🔹 Convert string → uuid.UUID
-		productID, err := uuid.Parse(p.ID)
-		if err != nil {
-			return fmt.Errorf("invalid product uuid: %w", err)
+		if strings.TrimSpace(l.ID) != "" {
+			if parsedID, err := uuid.Parse(l.ID); err == nil {
+				listingID = parsedID
+			}
 		}
 
-		categoryID, err := uuid.Parse(p.ProductCategoryID)
-		if err != nil {
-			return fmt.Errorf("invalid category uuid: %w", err)
-		}
-
-		// 🔹 Insert category safely
-		db.Clauses(clause.OnConflict{
-			Columns:   []clause.Column{{Name: "id"}},
-			DoNothing: true,
-		}).Create(&models.ProductCategory{
-			ID:   categoryID,
-			Name: p.ProductCategory.Name,
-		})
-
-		// 🔹 Append product
-		products = append(products, models.Product{
-			ID:                productID,
-			ProductCategoryID: categoryID,
-			Name:              p.Name,
-			Price:             p.Price,
-			Image:             p.Image,
-			Description:       p.Description,
-			Manufacturer:      p.Manufacturer,
+		listings = append(listings, models.Listing{
+			ID:            listingID,
+			Title:         l.Title,
+			Description:   l.Description,
+			PricePerNight: l.PricePerNight,
+			City:          l.City,
+			Country:       l.Country,
+			Image:         l.Image,
+			Category:      l.Category,
+			Rating:        l.Rating,
+			ReviewsCount:  l.ReviewsCount,
+			HostName:      l.HostName,
+			IsSuperhost:   l.IsSuperhost, // ✅ fixed
 		})
 	}
 
-	// 🔹 Bulk Insert
 	if err := db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
 		DoNothing: true,
-	}).Create(&products).Error; err != nil {
-		return err
+	}).Create(&listings).Error; err != nil {
+		return fmt.Errorf("failed to seed listings: %w", err)
 	}
 
-	logger.Success(fmt.Sprintf("✅ Successfully seeded %d products", len(products)))
+	logger.Success(fmt.Sprintf("✅ Successfully seeded %d listings", len(listings)))
 	return nil
 }
-
 
 
 

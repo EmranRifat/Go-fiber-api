@@ -3,8 +3,9 @@ package controllers
 import (
 	"fmt"
 	"strconv"
-	"sync"
 	"strings"
+	"sync"
+
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 
@@ -23,58 +24,72 @@ var (
 )
 
 
-
-func ListProductsDB(db *gorm.DB) fiber.Handler {
+func GetListingDataDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var products []models.Product
-
-		q := strings.TrimSpace(c.Query("q", ""))
 		page := c.QueryInt("page", 1)
 		limit := c.QueryInt("limit", 10)
+		q := strings.TrimSpace(c.Query("q"))
+		category := strings.TrimSpace(c.Query("category"))
 
 		if page < 1 {
 			page = 1
 		}
-		if limit < 1 || limit > 100 {
+		if limit < 1 {
 			limit = 10
 		}
 
 		offset := (page - 1) * limit
 
-		tx := db.Model(&models.Product{})
+		var listings []models.Listing
+		var total int64
+
+		query := db.Model(&models.Listing{})
 
 		if q != "" {
-			tx = tx.Where("LOWER(name) LIKE ?", "%"+strings.ToLower(q)+"%")
+			search := "%" + strings.ToLower(q) + "%"
+			query = query.Where(
+				`LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(city) LIKE ? OR LOWER(country) LIKE ? OR LOWER(host_name) LIKE ?`,
+				search, search, search, search, search,
+			)
 		}
 
-		var total int64
-		if err := tx.Count(&total).Error; err != nil {
-			return c.Status(500).JSON(fiber.Map{
-				"error": "Failed to count products",
+		if category != "" {
+			query = query.Where("LOWER(category) = ?", strings.ToLower(category))
+		}
+
+		if err := query.Count(&total).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"status":     "error",
+				"statusCode": fiber.StatusInternalServerError,
+				"message":    "Failed to count listings",
+				"error":      err.Error(),
 			})
 		}
 
-		if err := tx.
-			Preload("ProductCategory").
-			Order("id ASC").
-			Limit(limit).
+		if err := query.
 			Offset(offset).
-			Find(&products).Error; err != nil {
-			return c.Status(500).JSON(fiber.Map{
-				"error": "Failed to retrieve products",
+			Limit(limit).
+			Find(&listings).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"status":     "error",
+				"statusCode": fiber.StatusInternalServerError,
+				"message":    "Failed to fetch listings",
+				"error":      err.Error(),
 			})
 		}
 
 		totalPages := int((total + int64(limit) - 1) / int64(limit))
 
-		return c.JSON(fiber.Map{
-			"success": true,
-			"data":    products,
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"status":     "success",
+			"statusCode": fiber.StatusOK,
+			"message":    "Listings fetched successfully",
+			"data":       listings,
 			"meta": fiber.Map{
-				"page":        page,
-				"limit":       limit,
-				"total":       total,
-				"total_pages": totalPages,
+				"page":       page,
+				"limit":      limit,
+				"total":      total,
+				"totalPages": totalPages,
 			},
 		})
 	}
@@ -82,11 +97,13 @@ func ListProductsDB(db *gorm.DB) fiber.Handler {
 
 
 
-func GetProductByIDDB(db *gorm.DB) fiber.Handler {
+
+
+func GetListingByIDDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id := c.Params("id")
 
-		var p models.Product
+		var p models.Listing
 
 		if err := db.Preload("ProductCategory").
 			First(&p, "id = ?", id).Error; err != nil {
@@ -104,7 +121,7 @@ func GetProductByIDDB(db *gorm.DB) fiber.Handler {
 
 
 // CreateProductDB returns a Fiber handler that creates a product in DB.
-func CreateProductDB(db *gorm.DB) fiber.Handler {
+func CreateListingDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var in types.ProductInput
 		if err := c.BodyParser(&in); err != nil {
@@ -114,9 +131,9 @@ func CreateProductDB(db *gorm.DB) fiber.Handler {
 			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"error": "name required, price >= 0"})
 		}
 
-		p := models.Product{
-			Name:    in.Name,
-			Price:   in.Price,
+		p := models.Listing{
+			Title:    in.Name,
+			PricePerNight:   in.Price,
 			// InStock: in.InStock,
 		}
 		
