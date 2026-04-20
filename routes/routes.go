@@ -18,11 +18,10 @@ func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 	api.Post("/auth/register", controllers.RegisterDB(db))
 	api.Post("/auth/login", controllers.LoginDB(jwtm, db))
 	
-	// Products (PUBLIC)
-	api.Get("/product",  controllers.GetListingDataDB(db))
-
+	// listing (PUBLIC)
+	api.Get("/listings", controllers.GetListingDataDB(db))
 	// Detail
-	api.Get("/product/:id", controllers.GetListingByIDDB(db))
+	api.Get("/listing/:id", controllers.GetListingByIDDB(db))
 
 	// Create
 	api.Post("/product",  controllers.CreateListingDB(db))
