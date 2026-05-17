@@ -46,18 +46,9 @@ func SeedData(db *gorm.DB) error {
 
 
 // SeedListingFromJSON reads listings from assets/listing.json and seeds them
+// SeedListingFromJSON reads listings from assets/listing.json and inserts only new records
 func SeedListingFromJSON(db *gorm.DB) error {
 	logger.Success("📦 Seeding listings from JSON...")
-
-	var count int64
-	if err := db.Model(&models.Listing{}).Count(&count).Error; err != nil {
-		return fmt.Errorf("failed to count listings: %w", err)
-	}
-
-	if count > 0 {
-		logger.Info(fmt.Sprintf("Listings already seeded (%d records), skipping...", count))
-		return nil
-	}
 
 	projectRoot, err := os.Getwd()
 	if err != nil {
@@ -65,13 +56,13 @@ func SeedListingFromJSON(db *gorm.DB) error {
 	}
 
 	filePath := filepath.Join(projectRoot, "assets", "listing.json")
+
 	file, err := os.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to open listing.json: %w", err)
 	}
 	defer file.Close()
 
-	// ✅ flattened JSON structure
 	var listingsData []struct {
 		ID            string  `json:"id"`
 		Title         string  `json:"title"`
@@ -114,22 +105,32 @@ func SeedListingFromJSON(db *gorm.DB) error {
 			Rating:        l.Rating,
 			ReviewsCount:  l.ReviewsCount,
 			HostName:      l.HostName,
-			IsSuperhost:   l.IsSuperhost, // ✅ fixed
+			IsSuperhost:   l.IsSuperhost,
 		})
 	}
 
-	if err := db.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "id"}},
-		DoNothing: true,
-	}).Create(&listings).Error; err != nil {
-		return fmt.Errorf("failed to seed listings: %w", err)
+	if len(listings) == 0 {
+		logger.Info("No listings found in JSON")
+		return nil
 	}
 
-	logger.Success(fmt.Sprintf("✅ Successfully seeded %d listings", len(listings)))
+	result := db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		DoNothing: true,
+	}).Create(&listings)
+
+	if result.Error != nil {
+		return fmt.Errorf("failed to seed listings: %w", result.Error)
+	}
+
+	logger.Success(fmt.Sprintf(
+		"✅ Seed completed. JSON checked: %d, new inserted: %d",
+		len(listings),
+		result.RowsAffected,
+	))
+
 	return nil
 }
-
-
 
 
 
