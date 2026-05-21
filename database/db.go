@@ -20,12 +20,12 @@ func InitDB() (*gorm.DB, error) {
 	}
 	
 	// Get database configuration from environment variables
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	database := os.Getenv("DB_DATABASE")
-	user := os.Getenv("DB_USERNAME")
-	password := os.Getenv("DB_PASSWORD")
-	sslmode := os.Getenv("DB_SSLMODE")
+		host := os.Getenv("DB_HOST")
+		port := os.Getenv("DB_PORT")
+		database := os.Getenv("DB_NAME")
+		user := os.Getenv("DB_USER")
+		password := os.Getenv("DB_PASSWORD")
+		sslmode := os.Getenv("DB_SSLMODE")
 
 	// Set default sslmode if not provided
 	if sslmode == "" {

@@ -25,6 +25,7 @@ func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 
 	// Create
 	api.Post("/product",  controllers.CreateListingDB(db))
+	api.Post("/bookings",  controllers.CreateBookingDB(db))
 
 	// Product Categories (PUBLIC)
 	api.Get("/product-categories", controllers.ProductCategories(db))

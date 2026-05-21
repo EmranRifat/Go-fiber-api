@@ -1,464 +1,703 @@
 [
   {
     "id": "1",
-    "title": "Cozy Modern Apartment",
-    "description": "A cozy apartment in the city center with great views.",
-    "price_per_night": 120,
-    "city": "New York",
-    "country": "USA",
-    "image": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
-    "rating": 4.7,
-    "reviews_count": 134,
+    "title": "Luxury Cozy Apartment in Banani",
+    "description": "A stylish and cozy modern apartment located in the heart of Banani, Dhaka. Perfect for business travelers, couples, and short stays with premium comfort and modern amenities.",
+    "price_per_night": 12000,
+    "currency": "BDT",
+    "city": "Dhaka",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 23.793722,
+      "lng": 90.404139
+    },
+    "address": "Road 11, Banani, Dhaka 1213",
+    "images": [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
+      "https://images.unsplash.com/photo-1494526585095-c41746248156",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
+    ],
+    "rating": 4.8,
+    "reviews_count": 214,
     "category": "apartment",
-    "host_name": "John Doe",
-    "is_superhost": true
+    "host": {
+      "name": "John Doe",
+      "is_superhost": true
+    },
+    "details": {
+      "guests": 2,
+      "bedrooms": 1,
+      "beds": 1,
+      "bathrooms": 1
+    },
+    "amenities": [
+      "AC",
+      "Attached Washroom",
+      "LED Almirah",
+      "Blanket",
+      "Cosy Sofa",
+      "Free Coffee",
+      "WiFi",
+      "Smart TV",
+      "Hot Water",
+      "Kitchen",
+      "Parking"
+    ],
+    "house_rules": [
+      "No Smoking",
+      "No Pets",
+      "No Parties"
+    ],
+    "availability": true
   },
   {
     "id": "2",
-    "title": "Luxury Beach House",
-    "description": "Beautiful home near the beach with private pool.",
-    "price_per_night": 320,
-    "city": "Miami",
-    "country": "USA",
-    "image": "https://images.unsplash.com/photo-1505691938895-1758d7feb511",
+    "title": "Premium Serviced Suite in Gulshan",
+    "description": "An elegant serviced suite near Gulshan Avenue with business-ready workspace, quiet interiors, and quick access to restaurants, embassies, and shopping.",
+    "price_per_night": 14500,
+    "currency": "BDT",
+    "city": "Dhaka",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 23.780573,
+      "lng": 90.416674
+    },
+    "address": "Gulshan Avenue, Dhaka 1212",
+    "images": [
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
+      "https://images.unsplash.com/photo-1507089947368-19c1da9775ae",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2",
+      "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d"
+    ],
     "rating": 4.9,
-    "reviews_count": 98,
-    "category": "home",
-    "host_name": "Sarah Lee",
-    "is_superhost": true
+    "reviews_count": 188,
+    "category": "apartment",
+    "host": {
+      "name": "Nusrat Rahman",
+      "is_superhost": true
+    },
+    "details": {
+      "guests": 3,
+      "bedrooms": 1,
+      "beds": 2,
+      "bathrooms": 1
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Dedicated Workspace",
+      "Smart TV",
+      "Hot Water",
+      "Kitchen",
+      "Lift",
+      "Generator Backup",
+      "Security",
+      "Parking"
+    ],
+    "house_rules": [
+      "No Smoking",
+      "No Loud Music",
+      "Valid ID Required"
+    ],
+    "availability": true
   },
   {
     "id": "3",
-    "title": "Downtown Studio Apartment",
-    "description": "Compact studio perfect for solo travelers.",
-    "price_per_night": 90,
-    "city": "London",
-    "country": "UK",
-    "image": "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
-    "rating": 4.5,
-    "reviews_count": 67,
+    "title": "Lake View Apartment in Dhanmondi",
+    "description": "A bright apartment close to Dhanmondi Lake, cafes, hospitals, and universities. Ideal for families, medical visits, and relaxed city stays.",
+    "price_per_night": 8500,
+    "currency": "BDT",
+    "city": "Dhaka",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 23.746149,
+      "lng": 90.37423
+    },
+    "address": "Road 7A, Dhanmondi, Dhaka 1209",
+    "images": [
+      "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+      "https://images.unsplash.com/photo-1501183638710-841dd1904471"
+    ],
+    "rating": 4.6,
+    "reviews_count": 132,
     "category": "apartment",
-    "host_name": "Emma Watson",
-    "is_superhost": false
+    "host": {
+      "name": "Tanvir Ahmed",
+      "is_superhost": false
+    },
+    "details": {
+      "guests": 4,
+      "bedrooms": 2,
+      "beds": 2,
+      "bathrooms": 2
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Kitchen",
+      "Dining Table",
+      "Washing Machine",
+      "Hot Water",
+      "Balcony",
+      "Security",
+      "Parking"
+    ],
+    "house_rules": [
+      "No Parties",
+      "No Pets",
+      "Quiet Hours After 11 PM"
+    ],
+    "availability": true
   },
   {
     "id": "4",
-    "title": "5-Star Luxury Hotel Room",
-    "description": "Premium hotel room with city skyline view.",
-    "price_per_night": 450,
-    "city": "Dubai",
-    "country": "UAE",
-    "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945",
-    "rating": 4.8,
-    "reviews_count": 210,
+    "title": "Boutique Hotel Room in Cox's Bazar",
+    "description": "A comfortable hotel room minutes from the sea beach, with daily housekeeping, breakfast options, and easy access to Kolatoli and Sugandha points.",
+    "price_per_night": 9800,
+    "currency": "BDT",
+    "city": "Cox's Bazar",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 21.41679,
+      "lng": 91.984987
+    },
+    "address": "Kolatoli Road, Cox's Bazar 4700",
+    "images": [
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa",
+      "https://images.unsplash.com/photo-1578683010236-d716f9a3f461",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb"
+    ],
+    "rating": 4.7,
+    "reviews_count": 256,
     "category": "hotel",
-    "host_name": "Grand Hotel",
-    "is_superhost": true
+    "host": {
+      "name": "Sea Pearl Stay",
+      "is_superhost": true
+    },
+    "details": {
+      "guests": 2,
+      "bedrooms": 1,
+      "beds": 1,
+      "bathrooms": 1
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Breakfast",
+      "Attached Washroom",
+      "Sea View",
+      "Room Service",
+      "Hot Water",
+      "Lift",
+      "Security",
+      "Parking"
+    ],
+    "house_rules": [
+      "No Smoking",
+      "No Outside Guests After 10 PM",
+      "Check-in After 2 PM"
+    ],
+    "availability": true
   },
   {
     "id": "5",
-    "title": "Mountain View Cabin",
-    "description": "Peaceful home in the mountains.",
-    "price_per_night": 180,
-    "city": "Denver",
-    "country": "USA",
-    "image": "https://images.unsplash.com/photo-1449157291145-7efd050a4d0e",
-    "rating": 4.6,
-    "reviews_count": 88,
+    "title": "Tea Garden Resort Cottage in Sreemangal",
+    "description": "A peaceful cottage surrounded by tea gardens and green hills, perfect for nature lovers, couples, and weekend retreats from the city.",
+    "price_per_night": 11000,
+    "currency": "BDT",
+    "city": "Sreemangal",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 24.309887,
+      "lng": 91.729458
+    },
+    "address": "Tea Garden Area, Sreemangal, Moulvibazar 3210",
+    "images": [
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858"
+    ],
+    "rating": 4.8,
+    "reviews_count": 91,
     "category": "home",
-    "host_name": "Mike Ross",
-    "is_superhost": false
+    "host": {
+      "name": "Green Valley Retreat",
+      "is_superhost": true
+    },
+    "details": {
+      "guests": 3,
+      "bedrooms": 1,
+      "beds": 2,
+      "bathrooms": 1
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Garden View",
+      "Breakfast",
+      "Hot Water",
+      "Tea Tasting",
+      "Private Veranda",
+      "Restaurant",
+      "Parking"
+    ],
+    "house_rules": [
+      "No Loud Music",
+      "No Littering",
+      "Pets By Approval"
+    ],
+    "availability": true
   },
   {
     "id": "6",
-    "title": "Minimalist Apartment",
-    "description": "Clean and modern apartment with minimalist design.",
-    "price_per_night": 110,
-    "city": "Tokyo",
-    "country": "Japan",
-    "image": "https://images.unsplash.com/photo-1507089947368-19c1da9775ae",
-    "rating": 4.4,
-    "reviews_count": 55,
-    "category": "apartment",
-    "host_name": "Akira Tanaka",
-    "is_superhost": false
+    "title": "Riverside Villa in Sylhet",
+    "description": "A spacious villa with riverside views, open balconies, and easy routes to Ratargul, Jaflong, and Sylhet city attractions.",
+    "price_per_night": 15500,
+    "currency": "BDT",
+    "city": "Sylhet",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 24.904539,
+      "lng": 91.919363
+    },
+    "address": "Shahporan Road, Sylhet 3100",
+    "images": [
+      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3",
+      "https://images.unsplash.com/photo-1615873968403-89e068629265",
+      "https://images.unsplash.com/photo-1600566752355-35792bedcfea"
+    ],
+    "rating": 4.7,
+    "reviews_count": 118,
+    "category": "home",
+    "host": {
+      "name": "Farhana Chowdhury",
+      "is_superhost": true
+    },
+    "details": {
+      "guests": 6,
+      "bedrooms": 3,
+      "beds": 4,
+      "bathrooms": 3
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Kitchen",
+      "River View",
+      "Garden",
+      "BBQ Area",
+      "Hot Water",
+      "Generator Backup",
+      "Security",
+      "Parking"
+    ],
+    "house_rules": [
+      "No Smoking Indoors",
+      "No Parties Without Approval",
+      "Quiet Hours After 11 PM"
+    ],
+    "availability": true
   },
   {
     "id": "7",
-    "title": "Boutique Hotel Suite",
-    "description": "Stylish boutique hotel in downtown.",
-    "price_per_night": 260,
-    "city": "Paris",
-    "country": "France",
-    "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop",
-    "rating": 4.7,
-    "reviews_count": 120,
-    "category": "hotel",
-    "host_name": "Paris Boutique",
-    "is_superhost": true
+    "title": "Corporate Studio in Bashundhara R/A",
+    "description": "A clean studio near hospitals, convention centers, and shopping malls, designed for solo travelers, interns, and corporate guests.",
+    "price_per_night": 6800,
+    "currency": "BDT",
+    "city": "Dhaka",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 23.815867,
+      "lng": 90.426245
+    },
+    "address": "Block C, Bashundhara R/A, Dhaka 1229",
+    "images": [
+      "https://images.unsplash.com/photo-1507089947368-19c1da9775ae",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2"
+    ],
+    "rating": 4.5,
+    "reviews_count": 74,
+    "category": "apartment",
+    "host": {
+      "name": "Mahir Hasan",
+      "is_superhost": false
+    },
+    "details": {
+      "guests": 1,
+      "bedrooms": 1,
+      "beds": 1,
+      "bathrooms": 1
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Dedicated Workspace",
+      "Smart TV",
+      "Mini Fridge",
+      "Hot Water",
+      "Lift",
+      "Security"
+    ],
+    "house_rules": [
+      "No Smoking",
+      "No Pets",
+      "Valid ID Required"
+    ],
+    "availability": true
   },
   {
     "id": "8",
-    "title": "Family Home with Garden",
-    "description": "Spacious home perfect for families.",
-    "price_per_night": 200,
-    "city": "Toronto",
-    "country": "Canada",
-    "image": "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
+    "title": "Family Apartment near Agrabad",
+    "description": "A comfortable family apartment in Chattogram's commercial area, with quick access to offices, restaurants, and Patenga sea beach.",
+    "price_per_night": 9200,
+    "currency": "BDT",
+    "city": "Chattogram",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 22.326756,
+      "lng": 91.812977
+    },
+    "address": "Sheikh Mujib Road, Agrabad, Chattogram 4100",
+    "images": [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
+      "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
+      "https://images.unsplash.com/photo-1501183638710-841dd1904471",
+      "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5"
+    ],
     "rating": 4.6,
-    "reviews_count": 75,
-    "category": "home",
-    "host_name": "David Smith",
-    "is_superhost": false
+    "reviews_count": 103,
+    "category": "apartment",
+    "host": {
+      "name": "Sabrina Islam",
+      "is_superhost": false
+    },
+    "details": {
+      "guests": 5,
+      "bedrooms": 2,
+      "beds": 3,
+      "bathrooms": 2
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Kitchen",
+      "Washing Machine",
+      "Smart TV",
+      "Hot Water",
+      "Lift",
+      "Security",
+      "Parking"
+    ],
+    "house_rules": [
+      "No Parties",
+      "No Smoking Indoors",
+      "Children Welcome"
+    ],
+    "availability": true
   },
   {
     "id": "9",
-    "title": "City Center Apartment",
-    "description": "Stay close to everything in this central apartment.",
-    "price_per_night": 140,
-    "city": "Berlin",
-    "country": "Germany",
-    "image": "https://images.unsplash.com/photo-1493666438817-866a91353ca9",
-    "rating": 4.5,
-    "reviews_count": 60,
-    "category": "apartment",
-    "host_name": "Anna Müller",
-    "is_superhost": false
+    "title": "Heritage Home Stay in Old Dhaka",
+    "description": "A character-filled home stay close to historic streets, traditional food spots, Lalbagh Fort, and riverfront experiences.",
+    "price_per_night": 5800,
+    "currency": "BDT",
+    "city": "Dhaka",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 23.721187,
+      "lng": 90.395854
+    },
+    "address": "Nazimuddin Road, Old Dhaka 1100",
+    "images": [
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace",
+      "https://images.unsplash.com/photo-1618220179428-22790b461013",
+      "https://images.unsplash.com/photo-1617103996702-96ff29b1c467",
+      "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d"
+    ],
+    "rating": 4.4,
+    "reviews_count": 69,
+    "category": "home",
+    "host": {
+      "name": "Reza Karim",
+      "is_superhost": false
+    },
+    "details": {
+      "guests": 2,
+      "bedrooms": 1,
+      "beds": 1,
+      "bathrooms": 1
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Breakfast",
+      "Local Guide",
+      "Attached Washroom",
+      "Hot Water",
+      "Rooftop Access"
+    ],
+    "house_rules": [
+      "No Smoking",
+      "No Loud Music",
+      "Respect Family Space"
+    ],
+    "availability": true
   },
   {
     "id": "10",
-    "title": "Resort Hotel Room",
-    "description": "Relaxing hotel stay with resort amenities.",
-    "price_per_night": 380,
-    "city": "Bali",
-    "country": "Indonesia",
-    "image": "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1200&auto=format&fit=crop",
-    "rating": 4.9,
-    "reviews_count": 190,
-    "category": "hotel",
-    "host_name": "Bali Resort",
-    "is_superhost": true
+    "title": "Modern Flat in Uttara Sector 7",
+    "description": "A convenient flat near the airport and metro rail access, suitable for transit stays, families, and business trips.",
+    "price_per_night": 7600,
+    "currency": "BDT",
+    "city": "Dhaka",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 23.875895,
+      "lng": 90.379543
+    },
+    "address": "Sector 7, Uttara, Dhaka 1230",
+    "images": [
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
+      "https://images.unsplash.com/photo-1507089947368-19c1da9775ae",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858"
+    ],
+    "rating": 4.5,
+    "reviews_count": 87,
+    "category": "apartment",
+    "host": {
+      "name": "Arif Hossain",
+      "is_superhost": true
+    },
+    "details": {
+      "guests": 4,
+      "bedrooms": 2,
+      "beds": 2,
+      "bathrooms": 2
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Kitchen",
+      "Smart TV",
+      "Hot Water",
+      "Lift",
+      "Generator Backup",
+      "Security",
+      "Parking"
+    ],
+    "house_rules": [
+      "No Smoking",
+      "No Parties",
+      "Check-out Before 11 AM"
+    ],
+    "availability": true
   },
   {
     "id": "11",
-    "title": "Modern Loft Apartment",
-    "description": "Open-space loft with industrial style.",
-    "price_per_night": 160,
-    "city": "Chicago",
-    "country": "USA",
-    "image": "https://images.unsplash.com/photo-1494526585095-c41746248156",
+    "title": "Beachside Hotel Suite in Kuakata",
+    "description": "A relaxed hotel suite close to Kuakata sea beach, sunrise and sunset points, and local seafood restaurants.",
+    "price_per_night": 8800,
+    "currency": "BDT",
+    "city": "Kuakata",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 21.816825,
+      "lng": 90.121933
+    },
+    "address": "Beach Road, Kuakata, Patuakhali 8652",
+    "images": [
+      "https://images.unsplash.com/photo-1578683010236-d716f9a3f461",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa"
+    ],
     "rating": 4.6,
-    "reviews_count": 102,
-    "category": "apartment",
-    "host_name": "Chris Evans",
-    "is_superhost": true
+    "reviews_count": 121,
+    "category": "hotel",
+    "host": {
+      "name": "Sunset Bay Hotel",
+      "is_superhost": true
+    },
+    "details": {
+      "guests": 4,
+      "bedrooms": 1,
+      "beds": 2,
+      "bathrooms": 1
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Sea View",
+      "Breakfast",
+      "Room Service",
+      "Hot Water",
+      "Balcony",
+      "Restaurant",
+      "Parking"
+    ],
+    "house_rules": [
+      "No Smoking",
+      "No Pets",
+      "Check-in After 1 PM"
+    ],
+    "availability": true
   },
   {
     "id": "12",
-    "title": "Lake House Retreat",
-    "description": "Beautiful home by the lake.",
-    "price_per_night": 250,
-    "city": "Zurich",
-    "country": "Switzerland",
-    "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
-    "rating": 4.8,
-    "reviews_count": 77,
+    "title": "Quiet Guest Home in Rajshahi",
+    "description": "A neat guest home near Rajshahi University and Padma river area, good for academic visits, family stays, and short work trips.",
+    "price_per_night": 5200,
+    "currency": "BDT",
+    "city": "Rajshahi",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 24.370902,
+      "lng": 88.637916
+    },
+    "address": "Kazla Road, Rajshahi 6204",
+    "images": [
+      "https://images.unsplash.com/photo-1600585152220-90363fe7e115",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c",
+      "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea",
+      "https://images.unsplash.com/photo-1616594039964-ae9021a400a0"
+    ],
+    "rating": 4.3,
+    "reviews_count": 48,
     "category": "home",
-    "host_name": "Lukas Meier",
-    "is_superhost": true
+    "host": {
+      "name": "Padma Comfort Stay",
+      "is_superhost": false
+    },
+    "details": {
+      "guests": 2,
+      "bedrooms": 1,
+      "beds": 1,
+      "bathrooms": 1
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Attached Washroom",
+      "Hot Water",
+      "Breakfast",
+      "Desk",
+      "Security",
+      "Parking"
+    ],
+    
+    "house_rules": [
+      "No Parties",
+      "No Smoking Indoors",
+      "Valid ID Required"
+    ],
+    "availability": true
   },
   {
     "id": "13",
-    "title": "Budget Hotel Room",
-    "description": "Affordable stay with essential amenities.",
-    "price_per_night": 80,
-    "city": "Bangkok",
-    "country": "Thailand",
-    "image": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa",
+    "title": "Business Hotel Room in Motijheel",
+    "description": "A practical hotel room in Dhaka's commercial district with fast access to banks, offices, and transport links.",
+    "price_per_night": 7200,
+    "currency": "BDT",
+    "city": "Dhaka",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 23.733821,
+      "lng": 90.417682
+    },
+    "address": "Inner Circular Road, Motijheel, Dhaka 1000",
+    "images": [
+      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+      "https://images.unsplash.com/photo-1566665797739-1674de7a421a",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb"
+    ],
     "rating": 4.2,
-    "reviews_count": 140,
+    "reviews_count": 92,
     "category": "hotel",
-    "host_name": "Bangkok Stay",
-    "is_superhost": false
+    "host": {
+      "name": "Capital Business Inn",
+      "is_superhost": false
+    },
+    "details": {
+      "guests": 2,
+      "bedrooms": 1,
+      "beds": 1,
+      "bathrooms": 1
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Breakfast",
+      "Room Service",
+      "Hot Water",
+      "Lift",
+      "Security",
+      "Generator Backup"
+    ],
+    "house_rules": [
+      "No Smoking",
+      "Valid ID Required",
+      "No Outside Guests After 10 PM"
+    ],
+    "availability": true
   },
   {
     "id": "14",
-    "title": "Charming Countryside Home",
-    "description": "Quiet home surrounded by nature.",
-    "price_per_night": 170,
-    "city": "Tuscany",
-    "country": "Italy",
-    "image": "https://images.unsplash.com/photo-1472224371017-08207f84aaae",
-    "rating": 4.7,
-    "reviews_count": 90,
-    "category": "home",
-    "host_name": "Giovanni Rossi",
-    "is_superhost": true
-  },
-  {
-    "id": "15",
-    "title": "Compact City Apartment",
-    "description": "Perfect for short stays in the city.",
-    "price_per_night": 100,
-    "city": "Seoul",
-    "country": "South Korea",
-    "image": "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6",
-    "rating": 4.3,
-    "reviews_count": 58,
-    "category": "apartment",
-    "host_name": "Kim Lee",
-    "is_superhost": false
-  },
-  {
-    "id": "16",
-    "title": "Luxury Hotel Suite",
-    "description": "Top-tier hotel suite with premium services.",
-    "price_per_night": 500,
-    "city": "Singapore",
-    "country": "Singapore",
-    "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb",
-    "rating": 4.9,
-    "reviews_count": 220,
-    "category": "hotel",
-    "host_name": "SG Luxury",
-    "is_superhost": true
-  },
-  {
-    "id": "17",
-    "title": "Urban Home Stay",
-    "description": "Comfortable home in the city suburbs.",
-    "price_per_night": 150,
-    "city": "Sydney",
-    "country": "Australia",
-    "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
-    "rating": 4.6,
-    "reviews_count": 66,
-    "category": "home",
-    "host_name": "Olivia Brown",
-    "is_superhost": false
-  },
-  {
-    "id": "18",
-    "title": "Penthouse Apartment",
-    "description": "Luxury apartment with rooftop view.",
-    "price_per_night": 350,
-    "city": "Los Angeles",
-    "country": "USA",
-    "image": "https://images.unsplash.com/photo-1501183638710-841dd1904471",
-    "rating": 4.8,
-    "reviews_count": 143,
-    "category": "apartment",
-    "host_name": "Ryan Gosling",
-    "is_superhost": true
-  },
-  {
-    "id": "19",
-    "title": "Eco-Friendly Home",
-    "description": "Sustainable home with modern amenities.",
-    "price_per_night": 190,
-    "city": "Copenhagen",
-    "country": "Denmark",
-    "image": "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5",
-    "rating": 4.7,
-    "reviews_count": 80,
-    "category": "home",
-    "host_name": "Lars Jensen",
-    "is_superhost": true
-  },
-  {
-    "id": "20",
-    "title": "Classic Hotel Room",
-    "description": "Comfortable hotel stay in the city.",
-    "price_per_night": 210,
-    "city": "Rome",
-    "country": "Italy",
-    "image": "https://images.unsplash.com/photo-1566665797739-1674de7a421a",
+    "title": "Family Home near Khulna City Center",
+    "description": "A roomy family home with a calm neighborhood feel, close to Khulna city center and routes toward the Sundarbans.",
+    "price_per_night": 6400,
+    "currency": "BDT",
+    "city": "Khulna",
+    "country": "Bangladesh",
+    "location": {
+      "lat": 22.822489,
+      "lng": 89.552242
+    },
+    "address": "Sonadanga Residential Area, Khulna 9100",
+    "images": [
+      "https://images.unsplash.com/photo-1600210492493-0946911123ea",
+      "https://images.unsplash.com/photo-1600607687644-c7171b42498b",
+      "https://images.unsplash.com/photo-1600566753151-384129cf4e3e",
+      "https://images.unsplash.com/photo-1616046229478-9901c5536a45"
+    ],
     "rating": 4.5,
-    "reviews_count": 110,
-    "category": "hotel",
-    "host_name": "Rome Suites",
-    "is_superhost": false
-  },
-  {
-    "id": "21",
-    "title": "Seaside Cottage",
-    "description": "Charming cottage with ocean views.",
-    "price_per_night": 220,
-    "city": "Cape Town",
-    "country": "South Africa",
-    "image": "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-    "rating": 4.8,
-    "reviews_count": 95,
+    "reviews_count": 57,
     "category": "home",
-    "host_name": "Sophie Williams",
-    "is_superhost": true
-  },
-  {
-    "id": "22",
-    "title": "City Loft Apartment",
-    "description": "Stylish loft in the heart of the city.",
-    "price_per_night": 130,
-    "city": "Madrid",
-    "country": "Spain",
-    "image": "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
-    "rating": 4.5,
-    "reviews_count": 67,
-    "category": "apartment",
-    "host_name": "Carlos Garcia",
-    "is_superhost": false
-  },
-  {
-    "id": "23",
-    "title": "Luxury Resort Room",
-    "description": "Experience luxury at this beachfront resort.",
-    "price_per_night": 400,
-    "city": "Phuket",
-    "country": "Thailand",
-    "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop",
-    "rating": 4.9,
-    "reviews_count": 190,
-    "category": "hotel",
-    "host_name": "Phuket Resort",
-    "is_superhost": true
-  },
-  {
-    "id": "24",
-    "title": "Modern City Apartment",
-    "description": "Sleek apartment with city views.",
-    "price_per_night": 150,
-    "city": "Vienna",
-    "country": "Austria",
-    "image": "https://images.unsplash.com/photo-1494526585095-c41746248156",
-    "rating": 4.6,
-    "reviews_count": 102,
-    "category": "apartment",
-    "host_name": "Anna Schmidt",
-    "is_superhost": true
-  },
-  {
-    "id": "25",
-    "title": "Countryside Villa",
-    "description": "Spacious villa surrounded by nature.",
-    "price_per_night": 300,
-    "city": "Provence",
-    "country": "France",
-    "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
-    "rating": 4.8,
-    "reviews_count": 77,
-    "category": "home",
-    "host_name": "Jean Dupont",
-    "is_superhost": true
-  },
-  {
-    "id": "26",
-    "title": "Budget City Hotel",
-    "description": "Affordable hotel stay in the city center.",
-    "price_per_night": 70,
-    "city": "Lisbon",
-    "country": "Portugal",
-    "image": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa",
-    "rating": 4.2,
-    "reviews_count": 140,
-    "category": "hotel",
-    "host_name": "Lisbon Stay",
-    "is_superhost": false
-  },
-  {
-    "id": "27",
-    "title": "Rustic Mountain Cabin",
-    "description": "Cozy cabin with stunning mountain views.",
-    "price_per_night": 190,
-    "city": "Aspen",
-    "country": "USA",
-    "image": "https://images.unsplash.com/photo-1472224371017-08207f84aaae",
-    "rating": 4.7,
-    "reviews_count": 90,
-    "category": "home",
-    "host_name": "Emily Clark",
-    "is_superhost": true
-  },
-  {
-    "id": "28",
-    "title": "Compact Urban Apartment",
-    "description": "Perfect for short stays in the city.",
-    "price_per_night": 100,
-    "city": "Seoul",
-    "country": "South Korea",
-    "image": "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6",
-    "rating": 4.3,
-    "reviews_count": 58,
-    "category": "apartment",
-    "host_name": "Min Lee",
-    "is_superhost": false
-  },
-  {
-    "id": "29",
-    "title": "Luxury Hotel Suite",
-    "description": "Top-tier hotel suite with premium services.",
-    "price_per_night": 500,
-    "city": "Singapore",
-    "country": "Singapore",
-    "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb",
-    "rating": 4.9,
-    "reviews_count": 220,
-    "category": "hotel",
-    "host_name": "SG Luxury",
-    "is_superhost": true
-  },
-  {
-    "id": "30",
-    "title": "Urban Home Stay",
-    "description": "Comfortable home in the city suburbs.",
-    "price_per_night": 150,
-    "city": "Sydney",
-    "country": "Australia",
-    "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
-    "rating": 4.6,
-    "reviews_count": 66,
-    "category": "home",
-    "host_name": "Olivia Brown",
-    "is_superhost": false
-  },
-  {
-    "id": "31",
-    "title": "Penthouse Apartment",
-    "description": "Luxury apartment with rooftop view.",
-    "price_per_night": 350,
-    "city": "Los Angeles",
-    "country": "USA",
-    "image": "https://images.unsplash.com/photo-1501183638710-841dd1904471",
-    "rating": 4.8,
-    "reviews_count": 143,
-    "category": "apartment",
-    "host_name": "Ryan Gosling",
-    "is_superhost": true
-  },
-  {
-    "id": "32",
-    "title": "Eco-Friendly Home",
-    "description": "Sustainable home with modern amenities.",
-    "price_per_night": 190,
-    "city": "Copenhagen",
-    "country": "Denmark",
-    "image": "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5",
-    "rating": 4.7,
-    "reviews_count": 80,
-    "category": "home",
-    "host_name": "Lars Jensen",
-    "is_superhost": true
-  },
-  {
-    "id": "33",
-    "title": "Classic Hotel Room",
-    "description": "Comfortable hotel stay in the city.",
-    "price_per_night": 210,
-    "city": "Rome",
-    "country": "Italy",
-    "image": "https://images.unsplash.com/photo-1566665797739-1674de7a421a",
-    "rating": 4.5,
-    "reviews_count": 110,
-    "category": "hotel",
-    "host_name": "Rome Suites",
-    "is_superhost": false
+    "host": {
+      "name": "Mahmudul Bari",
+      "is_superhost": false
+    },
+    "details": {
+      "guests": 5,
+      "bedrooms": 3,
+      "beds": 3,
+      "bathrooms": 2
+    },
+    "amenities": [
+      "AC",
+      "WiFi",
+      "Kitchen",
+      "Dining Table",
+      "Hot Water",
+      "Garden",
+      "Security",
+      "Parking"
+    ],
+    "house_rules": [
+      "No Parties",
+      "No Smoking Indoors",
+      "Children Welcome"
+    ],
+    "availability": true
   }
 ]
+

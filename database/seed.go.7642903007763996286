@@ -24,7 +24,7 @@ func SeedData(db *gorm.DB) error {
 		return err
 	}
 	return nil
-
+	
 	// Seed orders from JSON
 	if err := SeedOrdersFromJSON(db); err != nil {
 		logger.Error("Failed to seed orders", err)
@@ -41,8 +41,12 @@ func SeedData(db *gorm.DB) error {
 	return nil
 }
 
-// SeedListingFromJSON reads listings from assets/listing.json and makes those
-// records the source of truth for the listings table.
+
+
+
+
+// SeedListingFromJSON reads listings from assets/listing.json and seeds them
+// SeedListingFromJSON reads listings from assets/listing.json and inserts only new records
 func SeedListingFromJSON(db *gorm.DB) error {
 	logger.Success("📦 Seeding listings from JSON...")
 
@@ -60,27 +64,27 @@ func SeedListingFromJSON(db *gorm.DB) error {
 	defer file.Close()
 
 	var listingsData []struct {
-		ID            string          `json:"id"`
-		Title         string          `json:"title"`
-		Description   string          `json:"description"`
-		PricePerNight float64         `json:"price_per_night"`
-		Currency      string          `json:"currency"`
-		City          string          `json:"city"`
-		Country       string          `json:"country"`
-		Location      models.Location `json:"location"`
-		Address       string          `json:"address"`
-		Image         string          `json:"image"`
-		Images        []string        `json:"images"`
-		Rating        float64         `json:"rating"`
-		ReviewsCount  int             `json:"reviews_count"`
-		Category      string          `json:"category"`
-		HostName      string          `json:"host_name"`
-		IsSuperhost   bool            `json:"is_superhost"`
-		Host          models.Host     `json:"host"`
-		Details       models.Details  `json:"details"`
-		Amenities     []string        `json:"amenities"`
-		HouseRules    []string        `json:"house_rules"`
-		Availability  bool            `json:"availability"`
+		ID            string  `json:"id"`
+		Title         string  `json:"title"`
+		Description   string  `json:"description"`
+		PricePerNight float64 `json:"price_per_night"`
+		Currency      string  `json:"currency"`
+		City          string  `json:"city"`
+		Country       string  `json:"country"`
+		Location      string  `json:"location"`
+		Address       string  `json:"address"`
+		Image         string  `json:"image"`
+		Images        []string `json:"images"`
+		Rating        float64 `json:"rating"`
+		ReviewsCount  int     `json:"reviews_count"`
+		Category      string  `json:"category"`
+		HostName      string  `json:"host_name"`
+		IsSuperhost   bool    `json:"is_superhost"`
+		Host          models.Host `json:"host"`
+		Details       models.Details `json:"details"`
+		Amenities     []string `json:"amenities"`
+		HouseRules    []string `json:"house_rules"`
+		Availability  bool `json:"availability"`
 	}
 
 	if err := json.NewDecoder(file).Decode(&listingsData); err != nil {
@@ -143,37 +147,32 @@ func SeedListingFromJSON(db *gorm.DB) error {
 		return nil
 	}
 
-	var deletedRows int64
-	var insertedRows int64
+	result := db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		DoNothing: true,
+	}).Create(&listings)
 
-	err = db.Transaction(func(tx *gorm.DB) error {
-		deleteResult := tx.Where("1 = 1").Delete(&models.Listing{})
-		if deleteResult.Error != nil {
-			return deleteResult.Error
-		}
-		deletedRows = deleteResult.RowsAffected
-
-		createResult := tx.Create(&listings)
-		if createResult.Error != nil {
-			return createResult.Error
-		}
-		insertedRows = createResult.RowsAffected
-
-		return nil
-	})
-	if err != nil {
-		return fmt.Errorf("failed to replace seeded listings: %w", err)
+	if result.Error != nil {
+		return fmt.Errorf("failed to seed listings: %w", result.Error)
 	}
 
 	logger.Success(fmt.Sprintf(
-		"✅ Seed completed. JSON checked: %d, old removed: %d, inserted: %d",
+		"✅ Seed completed. JSON checked: %d, new inserted: %d",
 		len(listings),
-		deletedRows,
-		insertedRows,
+		result.RowsAffected,
 	))
 
 	return nil
 }
+
+
+
+
+
+
+
+
+
 
 // SeedOrdersFromJSON reads orders from json_data/order.json and seeds them
 func SeedOrdersFromJSON(db *gorm.DB) error {
@@ -188,7 +187,7 @@ func SeedOrdersFromJSON(db *gorm.DB) error {
 		logger.Info(fmt.Sprintf("Orders already seeded (%d records), skipping...", count))
 		return nil
 	}
-
+		
 	// Read JSON file
 	projectRoot, err := os.Getwd()
 	if err != nil {
@@ -226,7 +225,7 @@ func SeedOrdersFromJSON(db *gorm.DB) error {
 			logger.Error(fmt.Sprintf("Failed to parse timestamp for order %s", o.OrderID), err)
 			createdAt = time.Now()
 		}
-
+ 
 		orders[i] = models.Order{
 			OrderID:      o.OrderID,
 			CustomerName: o.CustomerName,
@@ -249,6 +248,9 @@ func SeedOrdersFromJSON(db *gorm.DB) error {
 	return nil
 }
 
+
+
+ 
 // SeedWeatherFromJSON reads json_data/weather.json and seeds rows.
 func SeedWeatherFromJSON(db *gorm.DB) error {
 	logger.Success("📋 Seeding Weather from JSON...")
@@ -314,6 +316,8 @@ func SeedWeatherFromJSON(db *gorm.DB) error {
 	return nil
 }
 
+
+
 // parseTimestamp parses various timestamp formats
 func parseTimestamp(timestamp string) (time.Time, error) {
 	// Try RFC3339 format first (e.g., "2025-02-10T14:10:00Z")
@@ -330,6 +334,7 @@ func parseTimestamp(timestamp string) (time.Time, error) {
 		"2006-01-02 15:04",
 		"2006-01-02",
 	}
+	
 
 	for _, format := range formats {
 		t, err := time.Parse(format, timestamp)

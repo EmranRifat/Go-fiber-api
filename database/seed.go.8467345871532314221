@@ -60,27 +60,27 @@ func SeedListingFromJSON(db *gorm.DB) error {
 	defer file.Close()
 
 	var listingsData []struct {
-		ID            string          `json:"id"`
-		Title         string          `json:"title"`
-		Description   string          `json:"description"`
-		PricePerNight float64         `json:"price_per_night"`
-		Currency      string          `json:"currency"`
-		City          string          `json:"city"`
-		Country       string          `json:"country"`
+		ID            string         `json:"id"`
+		Title         string         `json:"title"`
+		Description   string         `json:"description"`
+		PricePerNight float64        `json:"price_per_night"`
+		Currency      string         `json:"currency"`
+		City          string         `json:"city"`
+		Country       string         `json:"country"`
 		Location      models.Location `json:"location"`
-		Address       string          `json:"address"`
-		Image         string          `json:"image"`
-		Images        []string        `json:"images"`
-		Rating        float64         `json:"rating"`
-		ReviewsCount  int             `json:"reviews_count"`
-		Category      string          `json:"category"`
-		HostName      string          `json:"host_name"`
-		IsSuperhost   bool            `json:"is_superhost"`
-		Host          models.Host     `json:"host"`
-		Details       models.Details  `json:"details"`
-		Amenities     []string        `json:"amenities"`
-		HouseRules    []string        `json:"house_rules"`
-		Availability  bool            `json:"availability"`
+		Address       string         `json:"address"`
+		Image         string         `json:"image"`
+		Images        []string       `json:"images"`
+		Rating        float64        `json:"rating"`
+		ReviewsCount  int            `json:"reviews_count"`
+		Category      string         `json:"category"`
+		HostName      string         `json:"host_name"`
+		IsSuperhost   bool           `json:"is_superhost"`
+		Host          models.Host    `json:"host"`
+		Details       models.Details `json:"details"`
+		Amenities     []string       `json:"amenities"`
+		HouseRules    []string       `json:"house_rules"`
+		Availability  bool           `json:"availability"`
 	}
 
 	if err := json.NewDecoder(file).Decode(&listingsData); err != nil {

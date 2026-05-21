@@ -89,18 +89,20 @@ func GetListingDataDB(db *gorm.DB) fiber.Handler {
 		totalPages := int((total + int64(limit) - 1) / int64(limit))
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"success": true,
-			"message": "Listings fetched successfully",
-			"listings": listings,
+	"success":  true,
+	"message":  "Listings fetched successfully",
+	"listings": listings,
 
-			"pagination": fiber.Map{
-				"page":        page,
-				"limit":       limit,
-				"totalPages":  totalPages,
-			},
+	"pagination": fiber.Map{
+		"page":       page,
+		"limit":      limit,
+		"total":      total,
+		"totalPages": totalPages,
+	},
 		})
 	}
 }
+
 
 
 
@@ -202,54 +204,57 @@ func UpdateProduct(c *fiber.Ctx) error {
 }
 
 
-// PATCH /api/product/:id (partial update)
-func PatchProduct(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil || id < 1 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
-	}
 
-	var patch types.ProductPatch
-	if err := c.BodyParser(&patch); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid body"})
-	}
 
-	mu.Lock()
-	defer mu.Unlock()
-	existing, ok := products[id]
-	if !ok {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "product not found"})
-	}
-
-	if patch.Name != nil {
-		existing.Name = *patch.Name
-	}
-	if patch.Price != nil {
-		if *patch.Price < 0 {
-			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"error": "price >= 0"})
+	// PATCH /api/product/:id (partial update)
+	func PatchProduct(c *fiber.Ctx) error {
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil || id < 1 {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 		}
-		existing.Price = *patch.Price
+
+		var patch types.ProductPatch
+		if err := c.BodyParser(&patch); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid body"})
+		}
+
+		mu.Lock()
+		defer mu.Unlock()
+		existing, ok := products[id]
+		if !ok {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "product not found"})
+		}
+
+		if patch.Name != nil {
+			existing.Name = *patch.Name
+		}
+		if patch.Price != nil {
+			if *patch.Price < 0 {
+				return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"error": "price >= 0"})
+			}
+			existing.Price = *patch.Price
+		}
+		if patch.InStock != nil {
+			existing.InStock = *patch.InStock
+		}
+		products[id] = existing
+		return c.JSON(existing)
 	}
-	if patch.InStock != nil {
-		existing.InStock = *patch.InStock
-	}
-	products[id] = existing
-	return c.JSON(existing)
-}
 
 
-// DELETE /api/product/:id
-func DeleteProduct(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil || id < 1 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
-	}
-	mu.Lock()
-	defer mu.Unlock()
-	if _, ok := products[id]; !ok {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "product not found"})
-	}
-	delete(products, id)
-	return c.JSON(fiber.Map{"message": "deleted"})
 
-}
+	// DELETE /api/product/:id
+	func DeleteProduct(c *fiber.Ctx) error {
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil || id < 1 {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
+		}
+		mu.Lock()
+		defer mu.Unlock()
+		if _, ok := products[id]; !ok {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "product not found"})
+		}
+		delete(products, id)
+		return c.JSON(fiber.Map{"message": "deleted"})
+
+	}
