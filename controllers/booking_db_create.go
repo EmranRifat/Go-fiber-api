@@ -12,7 +12,7 @@ import (
 )
 
 
-func CreateBookingDB(db *gorm.DB) fiber.Handler {
+func CreateBookingDB(db *gorm.DB) fiber.Handler { 
 	return func(c *fiber.Ctx) error {
 		var in types.CreateBookingRequest
 
@@ -27,7 +27,6 @@ func CreateBookingDB(db *gorm.DB) fiber.Handler {
 				"error": "listing_id is required",
 			})
 		}
-
 		if in.PaymentMethod == "" {
 			in.PaymentMethod = "manual"
 		}
