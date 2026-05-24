@@ -11,6 +11,7 @@ import (
 	"go-fiber-api/types"
 )
 
+
 func CreateBookingDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var in types.CreateBookingRequest

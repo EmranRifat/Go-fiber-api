@@ -23,7 +23,6 @@ type JWTManager struct {
 }
 
 
-
 // NewJWTManager creates a signer/verifier.
 // `hours` is the token lifetime (defaults to 72 if <= 0).
 func NewJWTManager(secret string, hours int) *JWTManager {
@@ -36,6 +35,7 @@ func NewJWTManager(secret string, hours int) *JWTManager {
 		iss:    "go-fiber-api", 		
 	}
 }
+
 
 
 	// Sign creates a JWT for the given user id + email.

@@ -9,6 +9,7 @@ import (
 )
 
 
+
 func Protect(jwtm *security.JWTManager) fiber.Handler {
 	
 	return func(c *fiber.Ctx) error {
@@ -16,9 +17,10 @@ func Protect(jwtm *security.JWTManager) fiber.Handler {
 		if h == "" || !strings.HasPrefix(h, "Bearer ") {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "missing or malformed Authorization header"})
 		}
+		
 		token := strings.TrimPrefix(h, "Bearer ")
-
 		claims, err := jwtm.Parse(token)
+
 		if err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "invalid or expired token"})
 		}
