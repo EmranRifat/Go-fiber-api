@@ -8,13 +8,16 @@ import (
 
 func autoMigrate() error {
 
-	// list of models
+	// AutoMigrate all models here 
 	modelList := []interface{}{
 		&models.User{},
 		&models.ProductCategory{},
 		&models.Listing{},
 		&models.Order{},
 		&models.Weather{},
+		&models.Booking{}, 
+		&models.Payment{},
+
 	}
 
 	for _, model := range modelList {

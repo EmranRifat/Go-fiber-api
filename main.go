@@ -5,7 +5,6 @@ import (
 	"go-fiber-api/config"
 	"go-fiber-api/database"
 	"go-fiber-api/logger"
-	"go-fiber-api/models"
 	"go-fiber-api/routes"
 	"go-fiber-api/security"
 	"log"
@@ -43,11 +42,7 @@ func main() {
 	}
 
 	logger.Success("DB Connection OK 👍")
-	// Auto migrate
-	if err := db.AutoMigrate(&models.Booking{}); err != nil {
-	logger.Error("AutoMigrate failed", err)
-	return
-}
+
 	// Setup HTML Engine
 	engine := html.New("./views", ".html")
 
@@ -85,9 +80,12 @@ func main() {
 		}
 		return c.JSON(fiber.Map{"db": "ok"})
 	})
-
+	
 	routes.ManageRoutes(app, jwtm, db)
+	routes.PaymentRoutes(app, db)
 
+
+	
 	addr := fmt.Sprintf("0.0.0.0:%s", cfg.AppPort)
 	// app.Listen(addr)
 
