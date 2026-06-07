@@ -19,6 +19,7 @@ type InitPaymentRequest struct {
 	CustomerPhone string `json:"customer_phone"`
 }
 
+
 func InitSSLPayment(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var req InitPaymentRequest

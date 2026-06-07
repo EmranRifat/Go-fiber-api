@@ -3,10 +3,8 @@ package controllers
 
 import (
 	"time"
-
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
-
 	"go-fiber-api/models"
 	"go-fiber-api/types"
 )

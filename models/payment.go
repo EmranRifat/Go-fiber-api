@@ -12,6 +12,5 @@ type Payment struct {
 	Status        string    `gorm:"default:pending" json:"status"` // pending, paid, failed, cancelled
 	Gateway       string    `gorm:"default:sslcommerz" json:"gateway"`
 	ValidationID  string    `json:"validation_id"`
-	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 }

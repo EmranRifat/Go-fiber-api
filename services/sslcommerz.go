@@ -72,14 +72,32 @@ func CreateSSLSession(tranID string, amount float64, currency, customerName, cus
 	data.Set("cus_name", customerName)
 	data.Set("cus_email", customerEmail)
 	data.Set("cus_add1", "Dhaka")
+	data.Set("cus_add2", "Dhaka")
 	data.Set("cus_city", "Dhaka")
+	data.Set("cus_state", "Dhaka")
+	data.Set("cus_postcode", "1000")
 	data.Set("cus_country", "Bangladesh")
 	data.Set("cus_phone", customerPhone)
+	data.Set("cus_fax", customerPhone)
 
 	data.Set("shipping_method", "NO")
 	data.Set("product_name", "Booking Payment")
 	data.Set("product_category", "Service")
 	data.Set("product_profile", "general")
+
+	emiOption := os.Getenv("SSLC_EMI_OPTION")
+	if emiOption == "" {
+		emiOption = "0"
+	}
+	data.Set("emi_option", emiOption)
+	if emiOption == "1" {
+		if v := os.Getenv("SSLC_EMI_MAX_INST_OPTION"); v != "" {
+			data.Set("emi_max_inst_option", v)
+		}
+		if v := os.Getenv("SSLC_EMI_SELECTED_INST"); v != "" {
+			data.Set("emi_selected_inst", v)
+		}
+	}
 
 	req, err := http.NewRequest(
 		http.MethodPost,
