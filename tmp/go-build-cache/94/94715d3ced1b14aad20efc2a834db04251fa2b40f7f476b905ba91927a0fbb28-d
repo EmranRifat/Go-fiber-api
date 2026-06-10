@@ -1,0 +1,3 @@
+./db.go
+./migration.go
+./seed.go

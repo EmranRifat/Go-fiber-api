@@ -17,6 +17,8 @@ func autoMigrate() error {
 		&models.Weather{},
 		&models.Booking{}, 
 		&models.Payment{},
+		&models.HostListing{},
+
 
 	}
 

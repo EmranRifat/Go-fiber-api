@@ -85,11 +85,12 @@ func CreateSSLSession(tranID string, amount float64, currency, customerName, cus
 	data.Set("product_category", "Service")
 	data.Set("product_profile", "general")
 
-	emiOption := os.Getenv("SSLC_EMI_OPTION")
-	if emiOption == "" {
-		emiOption = "0"
+	emiOption := "0"
+	if os.Getenv("SSLC_EMI_OPTION") == "1" {
+		emiOption = "1"
 	}
 	data.Set("emi_option", emiOption)
+	data.Set("emi_allow_only", "0")
 	if emiOption == "1" {
 		if v := os.Getenv("SSLC_EMI_MAX_INST_OPTION"); v != "" {
 			data.Set("emi_max_inst_option", v)

@@ -3,6 +3,7 @@ package routes
 
 import (
 	"go-fiber-api/controllers"
+	"go-fiber-api/controllers/dashboard"
 	"go-fiber-api/handlers"
 	"go-fiber-api/middleware"
 	"go-fiber-api/security"
@@ -11,27 +12,29 @@ import (
 	"gorm.io/gorm"
 )
 
-
 func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
-	
+
 	api := app.Group("/api")
 	// Auth (public)
 	api.Post("/auth/register", controllers.RegisterDB(db))
 	api.Post("/auth/login", controllers.LoginDB(jwtm, db))
-	
+
 	// listing (PUBLIC)
 	api.Get("/listings", controllers.GetListingDataDB(db))
 	// Detail
 	api.Get("/listing/:id", controllers.GetListingByIDDB(db))
 
 	// Create
-	api.Post("/product",  controllers.CreateListingDB(db))
+	api.Post("/product", controllers.CreateListingDB(db))
+	api.Post("/host-listings", middleware.Protect(jwtm), controllers.CreateHostListingHandler(db))
+	api.Get("/admin/host-listings", middleware.Protect(jwtm), dashboard.GetAdminHostListingsHandler(db))
+	api.Patch("/admin/host-listings/:id/status", middleware.Protect(jwtm), dashboard.UpdateHostListingStatusHandler(db))
 	// api.Post("/bookings",  controllers.CreateBookingDB(db))
-	api.Post("/bookings",middleware.Protect(jwtm),controllers.CreateBookingDB(db))
+	api.Post("/bookings", middleware.Protect(jwtm), controllers.CreateBookingDB(db))
 
 	// Product Categories (PUBLIC)
 	api.Get("/product-categories", controllers.ProductCategories(db))
-    api.Get("/product-categories/:id", controllers.SingleProductCategory(db))
+	api.Get("/product-categories/:id", controllers.SingleProductCategory(db))
 
 	// (Optional) protected writes later:
 	// api.Put("/product/:id",   middleware.Protect(jwtm), controllers.UpdateProductDB(db))
@@ -43,11 +46,10 @@ func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 	api.Get("/orders/:id", handlers.GetOrderByID(db))
 
 	// -------- Weather (public) --------
-	api.Get("/weather",                    controllers.ListWeatherDB(db))          // list + filters
-	api.Get("/weather/:id",                controllers.GetWeatherByIDDB(db))       // by numeric ID
+	api.Get("/weather", controllers.ListWeatherDB(db))                             // list + filters
+	api.Get("/weather/:id", controllers.GetWeatherByIDDB(db))                      // by numeric ID
 	api.Get("/weather/division/:division", controllers.GetWeatherByDivisionDB(db)) // by division name
 
-	
 	// Who am I (protected)
 	api.Get("/me", middleware.Protect(jwtm), func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
