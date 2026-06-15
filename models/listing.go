@@ -20,6 +20,7 @@ type Listing struct {
 	Image                     string            `json:"image"`
 	Images                    []string          `json:"images" gorm:"serializer:json;type:jsonb"`
 	Category                  string            `json:"category"`
+	Status                    string            `json:"status" gorm:"size:30;default:'Pending'"`
 	Rating                    float64           `json:"rating"`
 	ReviewsCount              int               `json:"reviews_count"`
 	HostName                  string            `json:"host_name"`

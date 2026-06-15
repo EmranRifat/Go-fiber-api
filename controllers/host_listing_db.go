@@ -1,87 +1,216 @@
 package controllers
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"path/filepath"
 	"strconv"
 	"strings"
 
+	"go-fiber-api/models"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"go-fiber-api/models"
 	"gorm.io/gorm"
 )
+
+// func CreateHostListingHandler(db *gorm.DB) fiber.Handler {
+// 	return func(c *fiber.Ctx) error {
+// 		var req models.HostListing
+
+// 		if err := c.BodyParser(&req); err != nil {
+// 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+// 				"success": false,
+// 				"message": "Invalid request body",
+// 				"error":   err.Error(),
+// 			})
+// 		}
+
+// 		userID, err := userIDFromContext(c)
+// 		if err != nil {
+// 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+// 				"success": false,
+// 				"message": "Unauthorized",
+// 				"error":   err.Error(),
+// 			})
+// 		}
+
+// 		var user models.User
+// 		if err := db.First(&user, userID).Error; err != nil {
+// 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+// 				"success": false,
+// 				"message": "User not found",
+// 			})
+// 		}
+
+// 		if err := validateHostListingRequest(&req); err != nil {
+// 			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+// 				"success": false,
+// 				"message": "Validation failed",
+// 				"error":   err.Error(),
+// 			})
+// 		}
+
+// 		rentPerNight, err := strconv.ParseFloat(strings.TrimSpace(req.RentPerNight), 64)
+// 		if err != nil || rentPerNight < 0 {
+// 			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+// 				"success": false,
+// 				"message": "Validation failed",
+// 				"error":   "rentPerNight must be a valid positive number",
+// 			})
+// 		}
+
+// 		if req.AvailabilitySelectionMode == "single" {
+// 			req.AvailableTo = req.AvailableFrom
+// 		}
+
+// 		hostListing := req
+// 		hostListing.ID = uuid.New()
+// 		hostListing.HostID = user.ID
+// 		hostListing.ListingID = nil
+// 		hostListing.Status = models.HostListingStatusPending
+
+// 		if err := db.Create(&hostListing).Error; err != nil {
+// 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+// 				"success": false,
+// 				"message": "Failed to create host listing",
+// 				"error":   err.Error(),
+// 			})
+// 		}
+
+// 		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+// 			"success": true,
+// 			"message": "Host listing submitted for admin approval",
+// 			"data":    hostListing,
+// 		})
+// 	}
+// }
+
+
 
 func CreateHostListingHandler(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var req models.HostListing
 
 		if err := c.BodyParser(&req); err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			return c.Status(400).JSON(fiber.Map{
 				"success": false,
 				"message": "Invalid request body",
 				"error":   err.Error(),
 			})
 		}
 
+		for _, photo := range req.Photos {
+			if strings.HasPrefix(photo, "blob:") {
+				return c.Status(400).JSON(fiber.Map{
+					"success": false,
+					"message": "Blob URLs are not supported. Upload actual image files as multipart/form-data.",
+				})
+			}
+		}
+
 		userID, err := userIDFromContext(c)
 		if err != nil {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			return c.Status(401).JSON(fiber.Map{
 				"success": false,
 				"message": "Unauthorized",
-				"error":   err.Error(),
 			})
 		}
 
 		var user models.User
 		if err := db.First(&user, userID).Error; err != nil {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			return c.Status(401).JSON(fiber.Map{
 				"success": false,
 				"message": "User not found",
 			})
 		}
 
-		if err := validateHostListingRequest(&req); err != nil {
-			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-				"success": false,
-				"message": "Validation failed",
-				"error":   err.Error(),
-			})
-		}
+		form, err := c.MultipartForm()
+		if err == nil {
+			if req.Facilities == nil {
+				if facilitiesJSON, ok := form.Value["facilities"]; ok && len(facilitiesJSON) > 0 {
+					var parsed map[string]any
+					if err := json.Unmarshal([]byte(facilitiesJSON[0]), &parsed); err != nil {
+						return c.Status(400).JSON(fiber.Map{
+							"success": false,
+							"message": "Invalid facilities JSON",
+							"error":   err.Error(),
+						})
+					}
+					req.Facilities = parsed
+				}
+			}
 
-		rentPerNight, err := strconv.ParseFloat(strings.TrimSpace(req.RentPerNight), 64)
-		if err != nil || rentPerNight < 0 {
-			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-				"success": false,
-				"message": "Validation failed",
-				"error":   "rentPerNight must be a valid positive number",
-			})
+			if form.File["photos"] != nil {
+				var photoURLs []string
+
+				for _, file := range form.File["photos"] {
+					ext := filepath.Ext(file.Filename)
+					filename := uuid.New().String() + ext
+					savePath := filepath.Join("uploads", filename)
+					host := c.Get("Host")
+					if strings.TrimSpace(host) == "" {
+						host = c.Hostname()
+					}
+					publicURL := fmt.Sprintf("%s://%s/uploads/%s", c.Protocol(), host, filename)
+
+					if err := c.SaveFile(file, savePath); err != nil {
+						return c.Status(500).JSON(fiber.Map{
+							"success": false,
+							"message": "Failed to save image",
+							"error":   err.Error(),
+						})
+					}
+
+					photoURLs = append(photoURLs, publicURL)
+				}
+
+				req.Photos = photoURLs
+			}
 		}
 
 		if req.AvailabilitySelectionMode == "single" {
 			req.AvailableTo = req.AvailableFrom
 		}
 
-		hostListing := req
-		hostListing.ID = uuid.New()
-		hostListing.HostID = user.ID
-		hostListing.ListingID = nil
-		hostListing.Status = models.HostListingStatusPending
+		req.HostID = user.ID
+		if req.ID == uuid.Nil {
+			req.ID = uuid.New()
+		}
+		req.ListingID = nil
+		req.Status = models.HostListingStatusPending
 
-		if err := db.Create(&hostListing).Error; err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		if err := validateHostListingRequest(&req); err != nil {
+			return c.Status(422).JSON(fiber.Map{
+				"success": false,
+				"message": "Validation failed",
+				"error":   err.Error(),
+			})
+		}
+
+		if err := db.Create(&req).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
 				"success": false,
 				"message": "Failed to create host listing",
 				"error":   err.Error(),
 			})
 		}
 
-		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		return c.Status(201).JSON(fiber.Map{
 			"success": true,
 			"message": "Host listing submitted for admin approval",
-			"data":    hostListing,
+			"data":    req,
 		})
 	}
 }
+
+
+
+
+
+
+
 
 func userIDFromContext(c *fiber.Ctx) (uint, error) {
 	sub, ok := c.Locals("sub").(string)

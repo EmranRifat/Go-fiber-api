@@ -6,9 +6,10 @@ import (
 	"strconv"
 	"strings"
 
+	"go-fiber-api/models"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"go-fiber-api/models"
 	"gorm.io/gorm"
 )
 
@@ -26,6 +27,18 @@ func GetAdminHostListingsHandler(db *gorm.DB) fiber.Handler {
 		}
 
 		query := db.Model(&models.HostListing{})
+
+		if idParam := strings.TrimSpace(c.Query("id")); idParam != "" {
+			hostListingID, err := uuid.Parse(idParam)
+			if err != nil {
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+					"success": false,
+					"message": "Invalid host listing id",
+					"error":   err.Error(),
+				})
+			}
+			query = query.Where("id = ?", hostListingID)
+		}
 
 		if statusParam := strings.TrimSpace(c.Query("status")); statusParam != "" {
 			status, err := normalizeHostListingStatus(statusParam)
@@ -56,6 +69,9 @@ func GetAdminHostListingsHandler(db *gorm.DB) fiber.Handler {
 	}
 }
 
+
+
+
 func UpdateHostListingStatusHandler(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if err := requireAdmin(c, db); err != nil {
@@ -83,7 +99,18 @@ func UpdateHostListingStatusHandler(db *gorm.DB) fiber.Handler {
 			})
 		}
 
-		status, err := normalizeHostListingStatus(req.Status)
+		statusValue := strings.TrimSpace(req.Status)
+		if statusValue == "" {
+			statusValue = strings.TrimSpace(c.Query("status"))
+		}
+		if statusValue == "" {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "Status is required",
+			})
+		}
+
+		status, err := normalizeHostListingStatus(statusValue)
 		if err != nil {
 			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 				"success": false,
@@ -123,12 +150,51 @@ func UpdateHostListingStatusHandler(db *gorm.DB) fiber.Handler {
 					return err
 				}
 
+				newListing.Status = status
+
 				if err := tx.Create(&newListing).Error; err != nil {
 					return err
 				}
 
 				hostListing.ListingID = &newListing.ID
 				listing = &newListing
+			} else if hostListing.ListingID != nil {
+				var existingListing models.Listing
+				err := tx.First(&existingListing, "id = ?", *hostListing.ListingID).Error
+				if err != nil {
+					if errors.Is(err, gorm.ErrRecordNotFound) {
+						hostListing.ListingID = nil
+						if status == models.HostListingStatusApproved {
+							var host models.User
+							if err := tx.First(&host, hostListing.HostID).Error; err != nil {
+								return err
+							}
+
+							newListing, err := listingFromHostListing(hostListing, host)
+							if err != nil {
+								return err
+							}
+
+							newListing.Status = status
+							if err := tx.Create(&newListing).Error; err != nil {
+								return err
+							}
+
+							hostListing.ListingID = &newListing.ID
+							listing = &newListing
+						}
+						// continue and save hostListing below
+					} else {
+						return err
+					}
+				}
+
+				existingListing.Status = status
+				if err := tx.Save(&existingListing).Error; err != nil {
+					return err
+				}
+
+				listing = &existingListing
 			}
 
 			if err := tx.Save(&hostListing).Error; err != nil {
@@ -145,16 +211,24 @@ func UpdateHostListingStatusHandler(db *gorm.DB) fiber.Handler {
 			})
 		}
 
-		response := fiber.Map{
+		updatedHostListing := hostListing
+		if err := db.First(&updatedHostListing, "id = ?", hostListingID).Error; err == nil {
+			response := fiber.Map{
+				"success":     true,
+				"message":     "Host listing status updated",
+				"hostListing": updatedHostListing,
+			}
+			if listing != nil {
+				response["listing"] = listing
+			}
+			return c.JSON(response)
+		}
+
+		return c.JSON(fiber.Map{
 			"success":     true,
 			"message":     "Host listing status updated",
 			"hostListing": hostListing,
-		}
-		if listing != nil {
-			response["listing"] = listing
-		}
-
-		return c.JSON(response)
+		})
 	}
 }
 

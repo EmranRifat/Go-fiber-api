@@ -8,6 +8,7 @@ import (
 	"go-fiber-api/routes"
 	"go-fiber-api/security"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -51,6 +52,7 @@ func main() {
 		Views:   engine,
 	})
 
+	app.Static("/uploads", "./uploads")
 	app.Use(fiberlogger.New())
 
 	app.Use(cors.New(cors.Config{
@@ -59,6 +61,11 @@ func main() {
 		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 		AllowCredentials: true,
 	}))
+
+	if err := os.MkdirAll("uploads", 0755); err != nil {
+		log.Fatal("Failed to create uploads directory:", err)
+	}
+	app.Static("/uploads", "./uploads")
 
 	// Routes
 	app.Get("/api/health", func(c *fiber.Ctx) error {
