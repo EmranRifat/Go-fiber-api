@@ -52,8 +52,23 @@ func GetAdminHostListingsHandler(db *gorm.DB) fiber.Handler {
 			query = query.Where("status = ?", status)
 		}
 
+		// ordering: support `order=created|updated` (default created)
+		orderBy := strings.ToLower(strings.TrimSpace(c.Query("order")))
+		if orderBy == "updated" || orderBy == "updated_at" {
+			query = query.Order("updated_at DESC")
+		} else {
+			query = query.Order("created_at DESC")
+		}
+
+		// if latest=true (or latest=1) then limit to 1
+		latest := strings.TrimSpace(c.Query("latest"))
+
 		var hostListings []models.HostListing
-		if err := query.Order("created_at DESC").Find(&hostListings).Error; err != nil {
+		if latest == "true" || latest == "1" {
+			query = query.Limit(1)
+		}
+
+		if err := query.Find(&hostListings).Error; err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"success": false,
 				"message": "Failed to load host listings",
@@ -68,9 +83,6 @@ func GetAdminHostListingsHandler(db *gorm.DB) fiber.Handler {
 		})
 	}
 }
-
-
-
 
 func UpdateHostListingStatusHandler(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
