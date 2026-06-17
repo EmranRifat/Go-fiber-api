@@ -1,4 +1,3 @@
-
 package database
 
 import (
@@ -8,18 +7,17 @@ import (
 
 func autoMigrate() error {
 
-	// AutoMigrate all models here 
+	// AutoMigrate all models here
 	modelList := []interface{}{
 		&models.User{},
 		&models.ProductCategory{},
 		&models.Listing{},
 		&models.Order{},
 		&models.Weather{},
-		&models.Booking{}, 
+		&models.Booking{},
 		&models.Payment{},
 		&models.HostListing{},
-
-
+		&models.APILogs{},
 	}
 
 	for _, model := range modelList {

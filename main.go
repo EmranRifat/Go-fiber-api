@@ -5,6 +5,7 @@ import (
 	"go-fiber-api/config"
 	"go-fiber-api/database"
 	"go-fiber-api/logger"
+	"go-fiber-api/middleware"
 	"go-fiber-api/routes"
 	"go-fiber-api/security"
 	"log"
@@ -13,6 +14,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	fiberlogger "github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
 	"github.com/joho/godotenv"
 )
@@ -54,6 +56,7 @@ func main() {
 
 	app.Static("/uploads", "./uploads")
 	app.Use(fiberlogger.New())
+	app.Use(recover.New())
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:3000,http://127.0.0.1:3000,http://192.168.1.71:3000",
@@ -61,6 +64,7 @@ func main() {
 		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 		AllowCredentials: true,
 	}))
+	app.Use("/api", middleware.ActivityLogger(db))
 
 	if err := os.MkdirAll("uploads", 0755); err != nil {
 		log.Fatal("Failed to create uploads directory:", err)
@@ -87,12 +91,10 @@ func main() {
 		}
 		return c.JSON(fiber.Map{"db": "ok"})
 	})
-	
+
 	routes.ManageRoutes(app, jwtm, db)
 	routes.PaymentRoutes(app, db)
 
-
-	
 	addr := fmt.Sprintf("0.0.0.0:%s", cfg.AppPort)
 	// app.Listen(addr)
 

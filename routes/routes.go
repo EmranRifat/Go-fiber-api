@@ -29,6 +29,7 @@ func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 	api.Post("/host-listings", middleware.Protect(jwtm), controllers.CreateHostListingHandler(db))
 	api.Get("/admin/host-listings", middleware.Protect(jwtm), dashboard.GetAdminHostListingsHandler(db))
 	api.Patch("/admin/host-listings/:id/status", middleware.Protect(jwtm), dashboard.UpdateHostListingStatusHandler(db))
+	api.Get("/admin/All-logs", middleware.Protect(jwtm), dashboard.GetAdminActivityLogsHandler(db))
 	// api.Post("/bookings",  controllers.CreateBookingDB(db))
 	api.Post("/bookings", middleware.Protect(jwtm), controllers.CreateBookingDB(db))
 
