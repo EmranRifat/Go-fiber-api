@@ -13,12 +13,6 @@ import (
 	"go-fiber-api/types"
 )
 
-// var (
-// 	userMu     sync.RWMutex
-// 	usersByID  = map[int]*types.User{}
-// 	usersByEM  = map[string]*types.User{} // key = lowercase email
-// 	nextUserID = 1
-// )
 
 
 func normalizeEmail(s string) string {
