@@ -154,7 +154,7 @@ func LoginDB(jwtm *security.JWTManager, db *gorm.DB) fiber.Handler {
 				"message":    "invalid credentials",
 			})
 		}
-
+		
 		// 3) issue JWT
 		tok, err := jwtm.Sign(int(u.ID), u.Email)
 		if err != nil {
