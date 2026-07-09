@@ -2,29 +2,51 @@
 package controllers
 
 import (
+	"errors"
+	"strconv"
+	"strings"
 	"time"
-	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+
 	"go-fiber-api/models"
 	"go-fiber-api/types"
+
+	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
+// bookingUserIDFromContext resolves the authenticated user ID set by middleware.Protect.
+func bookingUserIDFromContext(c *fiber.Ctx) (uint, error) {
+	sub, ok := c.Locals("sub").(string)
+	if !ok || strings.TrimSpace(sub) == "" {
+		return 0, errors.New("missing user subject")
+	}
 
-func CreateBookingDB(db *gorm.DB) fiber.Handler { 
+	id, err := strconv.ParseUint(sub, 10, 64)
+	if err != nil || id == 0 {
+		return 0, errors.New("invalid user subject")
+	}
+
+	return uint(id), nil
+}
+
+func CreateBookingDB(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var in types.CreateBookingRequest
 
+		// Parse request body
 		if err := c.BodyParser(&in); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "invalid body",
 			})
 		}
 
-		if in.ListingID == "" {
+		// Validation
+		if strings.TrimSpace(in.ListingID) == "" {
 			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 				"error": "listing_id is required",
 			})
 		}
+
 		if in.PaymentMethod == "" {
 			in.PaymentMethod = "manual"
 		}
@@ -41,7 +63,7 @@ func CreateBookingDB(db *gorm.DB) fiber.Handler {
 			})
 		}
 
-		if in.Currency == "" {
+		if strings.TrimSpace(in.Currency) == "" {
 			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 				"error": "currency is required",
 			})
@@ -53,6 +75,7 @@ func CreateBookingDB(db *gorm.DB) fiber.Handler {
 			})
 		}
 
+		// Parse dates
 		checkIn, err := time.Parse("2006-01-02", in.CheckIn)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -73,18 +96,31 @@ func CreateBookingDB(db *gorm.DB) fiber.Handler {
 			})
 		}
 
+		// Get authenticated user ID
+		userID, err := bookingUserIDFromContext(c)
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "unauthorized",
+			})
+		}
+
+		// Fetch authenticated user
+		var user models.User
+		if err := db.First(&user, userID).Error; err != nil {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": "user not found",
+			})
+		}
+
 		// Check duplicate booking
 		var existing models.Booking
 
 		err = db.Where(
-			"listing_id = ? AND check_in = ? AND check_out = ? AND adults = ? AND children = ? AND total_amount = ? AND currency = ?",
+			"listing_id = ? AND booked_by_id = ? AND check_in = ? AND check_out = ?",
 			in.ListingID,
+			user.ID,
 			checkIn,
 			checkOut,
-			in.Adults,
-			in.Children,
-			in.TotalAmount,
-			in.Currency,
 		).First(&existing).Error
 
 		if err == nil {
@@ -99,26 +135,47 @@ func CreateBookingDB(db *gorm.DB) fiber.Handler {
 			})
 		}
 
+		// Create booking
 		booking := models.Booking{
+			BookingID:    string(in.BookingID),
+			BookedByID:   user.ID,
+			BookedByName: user.Name,
+			BookedByEmail: user.Email,
+			BookedByRole: user.Role,
+
+			// Guest information (flattened from nested request object)
+			UserName:  in.UserInformation.Name,
+			UserEmail: in.UserInformation.Email,
+			UserPhone: in.UserInformation.Phone,
+			UserRole:  in.UserInformation.Role,
+
 			ListingID:     in.ListingID,
 			PaymentMethod: in.PaymentMethod,
-			CheckIn:       checkIn,
-			CheckOut:      checkOut,
-			Adults:        in.Adults,
-			Children:      in.Children,
-			TotalAmount:   in.TotalAmount,
-			Currency:      in.Currency,
 
-			BillingStreet:  in.BillingAddress.Street,
-			BillingCity:    in.BillingAddress.City,
-			BillingZip:     in.BillingAddress.Zip,
-			BillingCountry: in.BillingAddress.Country,
+			// Listing snapshot
+			ProductTitle: in.ProductTitle,
+			ProductImage: in.ProductImage,
+
+			CheckIn:  checkIn,
+			CheckOut: checkOut,
+
+			Adults:      in.Adults,
+			Children:    in.Children,
+			TotalAmount: in.TotalAmount,
+			Currency:    in.Currency,
+
+			// Guest address (flattened from nested request object)
+			UserStreet:  in.UserAddres.Street,
+			UserCity:    in.UserAddres.City,
+			UserZip:     in.UserAddres.Zip,
+			UserCountry: in.UserAddres.Country,
 
 			CardLast4:      in.CardLast4,
 			CardExpiration: in.CardExpiration,
 			TermsAccepted:  in.TermsAccepted,
 		}
 
+		// Save booking
 		if err := db.Create(&booking).Error; err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": "failed to create booking",

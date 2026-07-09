@@ -3,6 +3,8 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,12 +15,12 @@ import (
 )
 
 type InitPaymentRequest struct {
-	BookingID     uint   `json:"booking_id"`
+	// Accept both numeric ("34") and string ("34") from clients.
+	BookingID     string `json:"booking_id"`
 	CustomerName  string `json:"customer_name"`
 	CustomerEmail string `json:"customer_email"`
 	CustomerPhone string `json:"customer_phone"`
 }
-
 
 func InitSSLPayment(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -31,25 +33,54 @@ func InitSSLPayment(db *gorm.DB) fiber.Handler {
 			})
 		}
 
-		if req.BookingID == 0 {
+		if strings.TrimSpace(req.BookingID) == "" {
 			return c.Status(422).JSON(fiber.Map{
 				"status":  "error",
 				"message": "booking_id is required",
 			})
 		}
 
+		// Resolve either DB id (uint) or client "booking_id" string.
 		var booking models.Booking
-		if err := db.First(&booking, req.BookingID).Error; err != nil {
-			return c.Status(404).JSON(fiber.Map{
-				"status":  "error",
-				"message": "Booking not found",
-			})
+		bookingDBID, err := strconv.ParseUint(strings.TrimSpace(req.BookingID), 10, 64)
+		if err == nil && bookingDBID > 0 {
+			if dbErr := db.First(&booking, uint(bookingDBID)).Error; dbErr != nil {
+				return c.Status(404).JSON(fiber.Map{
+					"status":  "error",
+					"message": "Booking not found",
+				})
+			}
+		} else {
+			if dbErr := db.Where("booking_id = ?", req.BookingID).First(&booking).Error; dbErr != nil {
+				return c.Status(404).JSON(fiber.Map{
+					"status":  "error",
+					"message": "Booking not found",
+				})
+			}
+		}
+
+		if strings.TrimSpace(strings.ToLower(booking.PaymentMethod)) != "sslcommerz" {
+			// If the booking was created as manual but user is initiating an SSLCommerz
+			// payment flow, update the booking's payment method instead of creating
+			// a new booking row. This keeps a single booking record per reservation.
+			booking.PaymentMethod = "sslcommerz"
+			if err := db.Model(&booking).Update("payment_method", booking.PaymentMethod).Error; err != nil {
+				return c.Status(500).JSON(fiber.Map{
+					"status":  "error",
+					"message": "Failed to update booking payment method",
+				})
+			}
 		}
 
 		var paidCount int64
-		db.Model(&models.Payment{}).
+		if err := db.Model(&models.Payment{}).
 			Where("booking_id = ? AND status = ?", booking.ID, "paid").
-			Count(&paidCount)
+			Count(&paidCount).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"status":  "error",
+				"message": "Failed to check existing payments",
+			})
+		}
 		if paidCount > 0 {
 			return c.Status(409).JSON(fiber.Map{
 				"status":  "error",
@@ -70,9 +101,14 @@ func InitSSLPayment(db *gorm.DB) fiber.Handler {
 			currency = "BDT"
 		}
 
-		db.Model(&models.Payment{}).
+		if err := db.Model(&models.Payment{}).
 			Where("booking_id = ? AND status = ?", booking.ID, "pending").
-			Update("status", "cancelled")
+			Update("status", "cancelled").Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"status":  "error",
+				"message": "Failed to cancel pending payments",
+			})
+		}
 
 		tranID := fmt.Sprintf("BOOKING_%d_%d", booking.ID, time.Now().Unix())
 
@@ -94,7 +130,7 @@ func InitSSLPayment(db *gorm.DB) fiber.Handler {
 
 		customerName := req.CustomerName
 		if customerName == "" {
-			customerName = booking.BillingCity
+			customerName = booking.UserName
 		}
 		if customerName == "" {
 			customerName = "Customer"

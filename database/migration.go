@@ -5,8 +5,9 @@ import (
 	"go-fiber-api/models"
 )
 
-func autoMigrate() error {
 
+func autoMigrate() error {
+	
 	// AutoMigrate all models here
 	modelList := []interface{}{
 		&models.User{},

@@ -44,7 +44,7 @@ func GetListingDataDB(db *gorm.DB) fiber.Handler {
 
 		var listings []models.Listing
 		var total int64
-
+		
 		query := db.Model(&models.Listing{})
 
 		if q != "" {

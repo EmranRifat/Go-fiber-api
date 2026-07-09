@@ -3,21 +3,19 @@ package controllers
 import (
 	"strings"
 	// "sync"
-
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-
 	"go-fiber-api/models"
 	"go-fiber-api/security"
 	"go-fiber-api/types"
 )
 
 
-
 func normalizeEmail(s string) string {
 	return strings.ToLower(strings.TrimSpace(s))
 }
+
 
 
 // POST /api/auth/register (DB)

@@ -15,47 +15,71 @@ import (
 func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 
 	api := app.Group("/api")
-	// Auth (public)
-	api.Post("/auth/register", controllers.RegisterDB(db))
-	api.Post("/auth/login", controllers.LoginDB(jwtm, db))
 
-	// listing (PUBLIC)
+	// ==========================================================
+	// Public Authentication
+	// ==========================================================
+	auth := api.Group("/auth")
+	auth.Post("/register", controllers.RegisterDB(db))
+	auth.Post("/login", controllers.LoginDB(jwtm, db))
+
+	// ==========================================================
+	// Public Listing APIs
+	// ==========================================================
 	api.Get("/listings", controllers.GetListingDataDB(db))
-	// Detail
 	api.Get("/listing/:id", controllers.GetListingByIDDB(db))
-
-	// Create
 	api.Post("/product", controllers.CreateListingDB(db))
-	api.Post("/host-listings", middleware.Protect(jwtm), controllers.CreateHostListingHandler(db))
-	api.Get("/admin/host-listings", middleware.Protect(jwtm), dashboard.GetAdminHostListingsHandler(db))
-	api.Patch("/admin/host-listings/:id/status", middleware.Protect(jwtm), dashboard.UpdateHostListingStatusHandler(db))
-	api.Get("/admin/All-logs", middleware.Protect(jwtm), dashboard.GetAdminActivityLogsHandler(db))
-	// api.Post("/bookings",  controllers.CreateBookingDB(db))
-	api.Post("/bookings", middleware.Protect(jwtm), controllers.CreateBookingDB(db))
 
-	// Product Categories (PUBLIC)
+	// ==========================================================
+	// Public Product Category APIs
+	// ==========================================================
 	api.Get("/product-categories", controllers.ProductCategories(db))
 	api.Get("/product-categories/:id", controllers.SingleProductCategory(db))
 
-	// (Optional) protected writes later:
-	// api.Put("/product/:id",   middleware.Protect(jwtm), controllers.UpdateProductDB(db))
-	// api.Patch("/product/:id", middleware.Protect(jwtm), controllers.PatchProductDB(db))
-	// api.Delete("/product/:id",middleware.Protect(jwtm), controllers.DeleteProductDB(db))
-
-	// Orders (PUBLIC)
+	// ==========================================================
+	// Booking APIs (Protected)
+	// ==========================================================
+	api.Post("/bookings", middleware.Protect(jwtm), controllers.CreateBookingDB(db))
+	// ==========================================================
+	// Orders
+	// ==========================================================
 	api.Get("/orders", handlers.GetAllOrders(db))
 	api.Get("/orders/:id", handlers.GetOrderByID(db))
 
-	// -------- Weather (public) --------
-	api.Get("/weather", controllers.ListWeatherDB(db))                             // list + filters
-	api.Get("/weather/:id", controllers.GetWeatherByIDDB(db))                      // by numeric ID
-	api.Get("/weather/division/:division", controllers.GetWeatherByDivisionDB(db)) // by division name
+	// ==========================================================
+	// Weather APIs
+	// ==========================================================
+	api.Get("/weather", controllers.ListWeatherDB(db))
+	api.Get("/weather/:id", controllers.GetWeatherByIDDB(db))
+	api.Get("/weather/division/:division", controllers.GetWeatherByDivisionDB(db))
 
-	// Who am I (protected)
-	api.Get("/me", middleware.Protect(jwtm), func(c *fiber.Ctx) error {
+	// ==========================================================
+	// Protected User APIs
+	// ==========================================================
+	user := api.Group("/", middleware.Protect(jwtm))
+
+	user.Get("/me", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"subject": c.Locals("sub"),
 			"email":   c.Locals("email"),
 		})
 	})
+	
+	user.Post("/host-listings", controllers.CreateHostListingHandler(db))
+
+	// ==========================================================
+	// Admin APIs
+	// ==========================================================
+	admin := api.Group("/admin", middleware.Protect(jwtm))
+
+	admin.Get("/allUsers", dashboard.GetAllUsers(db))
+	admin.Get("/bookings", controllers.GetBookings(db))
+
+	admin.Get("/host-listings", dashboard.GetAdminHostListingsHandler(db))
+
+	admin.Patch("/host-listings/:id/status",
+		dashboard.UpdateHostListingStatusHandler(db),
+	)
+
+	admin.Get("/all-logs", dashboard.GetAdminActivityLogsHandler(db))
 }
