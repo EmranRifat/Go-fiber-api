@@ -46,8 +46,10 @@ type CreateBookingRequest struct {
 	Currency      string  `json:"currency"`
 
 	// Listing snapshot
-	ProductTitle string `json:"product_title"`
-	ProductImage string `json:"product_image"`
+	ProductTitle   string `json:"product_title"`
+	ProductImage   string `json:"product_image"`
+	Category       string `json:"category"`
+	ProductAddress string `json:"product_address"`
 
 	// Guest information (nested object on the wire)
 	UserInformation struct {

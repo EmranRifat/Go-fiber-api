@@ -24,9 +24,11 @@ type Booking struct {
 	ListingID     string `json:"listing_id"`
 	PaymentMethod string `json:"payment_method"`
 
-	// Listing snapshot (flattened from request.product_title/product_image)
-	ProductTitle string `json:"product_title"`
-	ProductImage string `json:"product_image"`
+	// Listing snapshot (flattened from request.product_title/product_image/category/product_address)
+	ProductTitle   string `json:"product_title"`
+	ProductImage   string `json:"product_image"`
+	Category       string `json:"category"`
+	ProductAddress string `json:"product_address"`
 
 	// Stay Details
 	CheckIn  time.Time `json:"check_in"`
@@ -36,12 +38,6 @@ type Booking struct {
 	Children    int     `json:"children"`
 	TotalAmount float64 `json:"total_amount"`
 	Currency    string  `json:"currency"`
-
-	// Guest address (flattened from request.user_addres)
-	UserStreet  string `json:"user_street"`
-	UserCity    string `json:"user_city"`
-	UserZip     string `json:"user_zip"`
-	UserCountry string `json:"user_country"`
 
 	// Payment
 	CardLast4      string `json:"card_last4"`

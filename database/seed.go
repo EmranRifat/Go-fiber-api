@@ -19,25 +19,26 @@ import (
 func SeedData(db *gorm.DB) error {
 	logger.Success("🌱 Starting database seeding...")
 
-	if err := SeedListingFromJSON(db); err != nil {
-		logger.Error("Failed to seed listings", err)
-		return err
-	}
-	return nil
-
-	// Seed orders from JSON
-	if err := SeedOrdersFromJSON(db); err != nil {
-		logger.Error("Failed to seed orders", err)
-		return err
+	// Check whether the listings table already contains data
+	var count int64
+	if err := db.Model(&models.Listing{}).Count(&count).Error; err != nil {
+		return fmt.Errorf("failed to count listings: %w", err)
 	}
 
-	// Seed weather from JSON
-	if err := SeedWeatherFromJSON(db); err != nil {
-		logger.Error("Failed to seed weather", err)
-		return err
+	// Only seed when the table is empty
+	if count == 0 {
+		logger.Info("📦 Listings table is empty. Seeding default data...")
+
+		if err := SeedListingFromJSON(db); err != nil {
+			logger.Error("Failed to seed listings", err)
+			return err
+		}
+
+		logger.Success("✅ Database seeding completed successfully")
+	} else {
+		logger.Info(fmt.Sprintf("📦 Listings table already contains %d records. Skipping seed.", count))
 	}
 
-	logger.Success("✅ Database seeding completed successfully")
 	return nil
 }
 
@@ -143,17 +144,19 @@ func SeedListingFromJSON(db *gorm.DB) error {
 		return nil
 	}
 
-	var deletedRows int64
 	var insertedRows int64
 
 	err = db.Transaction(func(tx *gorm.DB) error {
-		deleteResult := tx.Where("1 = 1").Delete(&models.Listing{})
-		if deleteResult.Error != nil {
-			return deleteResult.Error
-		}
-		deletedRows = deleteResult.RowsAffected
 
-		createResult := tx.Create(&listings)
+		createResult := tx.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "id"}},
+			DoNothing: true,
+		}).Create(&listings)
+
+		if createResult.Error != nil {
+			return createResult.Error
+		}
+
 		if createResult.Error != nil {
 			return createResult.Error
 		}
@@ -166,9 +169,8 @@ func SeedListingFromJSON(db *gorm.DB) error {
 	}
 
 	logger.Success(fmt.Sprintf(
-		"✅ Seed completed. JSON checked: %d, old removed: %d, inserted: %d",
+		"✅ Seed completed. JSON checked: %d, inserted: %d",
 		len(listings),
-		deletedRows,
 		insertedRows,
 	))
 

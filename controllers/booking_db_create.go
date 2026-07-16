@@ -137,11 +137,11 @@ func CreateBookingDB(db *gorm.DB) fiber.Handler {
 
 		// Create booking
 		booking := models.Booking{
-			BookingID:    string(in.BookingID),
-			BookedByID:   user.ID,
-			BookedByName: user.Name,
+			BookingID:     string(in.BookingID),
+			BookedByID:    user.ID,
+			BookedByName:  user.Name,
 			BookedByEmail: user.Email,
-			BookedByRole: user.Role,
+			BookedByRole:  user.Role,
 
 			// Guest information (flattened from nested request object)
 			UserName:  in.UserInformation.Name,
@@ -153,8 +153,10 @@ func CreateBookingDB(db *gorm.DB) fiber.Handler {
 			PaymentMethod: in.PaymentMethod,
 
 			// Listing snapshot
-			ProductTitle: in.ProductTitle,
-			ProductImage: in.ProductImage,
+			ProductTitle:   in.ProductTitle,
+			ProductImage:   in.ProductImage,
+			Category:       in.Category,
+			ProductAddress: in.ProductAddress,
 
 			CheckIn:  checkIn,
 			CheckOut: checkOut,
@@ -163,12 +165,6 @@ func CreateBookingDB(db *gorm.DB) fiber.Handler {
 			Children:    in.Children,
 			TotalAmount: in.TotalAmount,
 			Currency:    in.Currency,
-
-			// Guest address (flattened from nested request object)
-			UserStreet:  in.UserAddres.Street,
-			UserCity:    in.UserAddres.City,
-			UserZip:     in.UserAddres.Zip,
-			UserCountry: in.UserAddres.Country,
 
 			CardLast4:      in.CardLast4,
 			CardExpiration: in.CardExpiration,
