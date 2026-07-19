@@ -84,6 +84,11 @@ func GetAdminHostListingsHandler(db *gorm.DB) fiber.Handler {
 	}
 }
 
+
+
+
+
+
 func UpdateHostListingStatusHandler(db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if err := requireAdmin(c, db); err != nil {
@@ -269,11 +274,15 @@ func requireAdmin(c *fiber.Ctx, db *gorm.DB) error {
 		return errors.New("unauthorized: admin user not found")
 	}
 
-	if !strings.EqualFold(strings.TrimSpace(user.Role), "admin") {
-		return errors.New("only admin can access host listings")
-	}
+	role := strings.TrimSpace(user.Role)
 
-	return nil
+	switch {
+	case strings.EqualFold(role, "admin"),
+		strings.EqualFold(role, "superadmin"):
+		return nil
+	default:
+		return errors.New("only admin or superadmin can access host listings")
+	}
 }
 
 func adminErrorStatus(err error) int {

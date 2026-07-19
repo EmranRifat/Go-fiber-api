@@ -70,16 +70,16 @@ func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 	// ==========================================================
 	// Admin APIs
 	// ==========================================================
-	admin := api.Group("/admin", middleware.Protect(jwtm))
-
+	admin := api.Group("/admin",middleware.Protect(jwtm),middleware.RequireRoles("admin", "superadmin"))
 	admin.Get("/allUsers", dashboard.GetAllUsers(db))
 	admin.Get("/bookings", controllers.GetBookings(db))
 
 	admin.Get("/host-listings", dashboard.GetAdminHostListingsHandler(db))
 
-	admin.Patch("/host-listings/:id/status",
-		dashboard.UpdateHostListingStatusHandler(db),
-	)
+	admin.Patch(
+	"/host-listings/:id/status",
+	dashboard.UpdateHostListingStatusHandler(db),
+)
 
 	admin.Get("/all-logs", dashboard.GetAdminActivityLogsHandler(db))
 }

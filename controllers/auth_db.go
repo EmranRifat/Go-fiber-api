@@ -153,8 +153,9 @@ func LoginDB(jwtm *security.JWTManager, db *gorm.DB) fiber.Handler {
 			})
 		}
 		
+
 		// 3) issue JWT
-		tok, err := jwtm.Sign(int(u.ID), u.Email)
+		tok, err := jwtm.Sign(int(u.ID), u.Email, u.Role)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"status":     "error",
