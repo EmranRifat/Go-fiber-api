@@ -2,17 +2,24 @@ package config
 
 import (
 	"fmt"
+	"go-fiber-api/types"
 	"os"
 	"strconv"
-	"go-fiber-api/types"
 )
 
 func Load() (*types.Config, error) {
+	port := getenv("PORT", "")
+
+	if port == "" {
+		port = getenv("APP_PORT", "8080")
+	}
+
 	cfg := &types.Config{
-		AppPort:         getenv("APP_PORT", "8080"),
-		// here if AppPort missing .env, default 8080
+		AppPort: port,
+
 		JWTSecret:       os.Getenv("JWT_SECRET"),
 		JWTExpiresHours: getenvInt("JWT_EXPIRES_HOURS", 72),
+
 		DBHost:     getenv("DB_HOST", "localhost"),
 		DBPort:     getenv("DB_PORT", "5432"),
 		DBUser:     getenv("DB_USER", "postgres"),
@@ -25,6 +32,7 @@ func Load() (*types.Config, error) {
 	if cfg.JWTSecret == "" {
 		return nil, fmt.Errorf("JWT_SECRET is required")
 	}
+
 	return cfg, nil
 }
 

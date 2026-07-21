@@ -84,7 +84,7 @@ func main() {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("🚀 Go Fiber API running...")
 	})
-
+	
 	app.Get("/api/db/ping", func(c *fiber.Ctx) error {
 		if err := database.Ping(db); err != nil {
 			return c.Status(500).JSON(fiber.Map{"db": "down", "detail": err.Error()})
