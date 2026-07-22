@@ -19,30 +19,27 @@ import (
 func SeedData(db *gorm.DB) error {
 	logger.Success("🌱 Starting database seeding...")
 
-	// Check whether the listings table already contains data
-	var count int64
-	if err := db.Model(&models.Listing{}).Count(&count).Error; err != nil {
-		return fmt.Errorf("failed to count listings: %w", err)
+	if err := SeedListingFromJSON(db); err != nil {
+		logger.Error("Failed to seed listings", err)
+		return err
 	}
 
-	// Only seed when the table is empty
-	if count == 0 {
-		logger.Info("📦 Listings table is empty. Seeding default data...")
 
-		if err := SeedListingFromJSON(db); err != nil {
-			logger.Error("Failed to seed listings", err)
-			return err
-		}
-
-		logger.Success("✅ Database seeding completed successfully")
-	} else {
-		logger.Info(fmt.Sprintf("📦 Listings table already contains %d records. Skipping seed.", count))
+	if err := SeedReviews(db); err != nil {
+		logger.Error("Failed to seed reviews", err)
+		return err
 	}
+
+	logger.Success("✅ Database seeding completed successfully")
 
 	return nil
 }
 
+
+
+
 // SeedListingFromJSON reads listings from assets/listing.json and makes those
+
 // records the source of truth for the listings table.
 func SeedListingFromJSON(db *gorm.DB) error {
 	logger.Success("📦 Seeding listings from JSON...")
@@ -250,6 +247,69 @@ func SeedOrdersFromJSON(db *gorm.DB) error {
 	logger.Success(fmt.Sprintf("✅ Successfully seeded %d orders", len(orders)))
 	return nil
 }
+
+
+
+
+// SeedReviews reads reviews from json_data/reviews.json and seeds them
+func SeedReviews(db *gorm.DB) error {
+	logger.Success("⭐ Seeding reviews from JSON...")
+
+	var count int64
+	if err := db.Model(&models.Review{}).Count(&count).Error; err != nil {
+		return fmt.Errorf("failed to count reviews: %w", err)
+	}
+
+	if count > 0 {
+		logger.Info(fmt.Sprintf("Reviews already seeded (%d records), skipping...", count))
+		return nil
+	}
+
+	projectRoot, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get working directory: %w", err)
+	}
+
+		filePath := filepath.Join(
+			projectRoot,
+			"assets",
+			"reviews.json",
+		)
+	file, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open reviews.json: %w", err)
+	}
+	defer file.Close()
+
+
+	var reviews []models.Review
+
+	decoder := json.NewDecoder(file)
+
+	if err := decoder.Decode(&reviews); err != nil {
+		return fmt.Errorf("failed to decode reviews.json: %w", err)
+	}
+
+
+	if err := db.Create(&reviews).Error; err != nil {
+		return fmt.Errorf("failed to seed reviews: %w", err)
+	}
+
+	logger.Success(fmt.Sprintf("✅ Successfully seeded %d reviews", len(reviews)))
+
+	return nil
+}
+
+
+
+
+
+
+
+
+
+
+
 
 // SeedWeatherFromJSON reads json_data/weather.json and seeds rows.
 func SeedWeatherFromJSON(db *gorm.DB) error {

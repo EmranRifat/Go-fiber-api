@@ -19,6 +19,8 @@ func autoMigrate() error {
 		&models.Payment{},
 		&models.HostListing{},
 		&models.APILogs{},
+		&models.Review{},
+		
 	}
 
 	for _, model := range modelList {

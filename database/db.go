@@ -20,11 +20,11 @@ func InitDB() (*gorm.DB, error) {
 	// }
 	// Load .env only for local development
 // Load .env only for local development
-	if os.Getenv("RENDER") == "" {
-		if err := godotenv.Load(); err != nil {
-			fmt.Println("No .env file found, using system environment variables")
-		}
-	}
+if os.Getenv("RENDER") == "" {
+    if err := godotenv.Load(); err != nil {
+        fmt.Println("No .env file found, using system environment variables")
+    }
+}
 	
 	// Get database configuration from environment variables
 		host := os.Getenv("DB_HOST")
@@ -56,6 +56,8 @@ func InitDB() (*gorm.DB, error) {
 	}
 	fmt.Println("✅ Successfully connected DB ")
 
+
+	
 	// Auto migrate models
 	if err := autoMigrate(); err != nil {
 		fmt.Println("Failed to migrate models:", err)

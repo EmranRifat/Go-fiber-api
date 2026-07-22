@@ -1,0 +1,142 @@
+[
+  {
+    "user_id": 2,
+    "listing_id": 1,
+    "rating": 5,
+    "comment": "Amazing apartment. Very clean and comfortable place.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 3,
+    "listing_id": 1,
+    "rating": 4,
+    "comment": "Good location and friendly host. Had a nice stay.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 4,
+    "listing_id": 2,
+    "rating": 5,
+    "comment": "Excellent experience. Everything was perfect.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 5,
+    "listing_id": 2,
+    "rating": 3,
+    "comment": "The place was okay but needs some improvement.",
+    "status": "Pending"
+  },
+  {
+    "user_id": 6,
+    "listing_id": 3,
+    "rating": 2,
+    "comment": "Not satisfied with cleanliness.",
+    "status": "Rejected"
+  },
+  {
+    "user_id": 7,
+    "listing_id": 3,
+    "rating": 5,
+    "comment": "Beautiful home with amazing views.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 8,
+    "listing_id": 4,
+    "rating": 4,
+    "comment": "Comfortable stay and good service.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 9,
+    "listing_id": 4,
+    "rating": 3,
+    "comment": "Average experience. Could be better.",
+    "status": "Pending"
+  },
+  {
+    "user_id": 10,
+    "listing_id": 5,
+    "rating": 5,
+    "comment": "One of the best places I have stayed.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 11,
+    "listing_id": 5,
+    "rating": 4,
+    "comment": "Nice environment and helpful host.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 12,
+    "listing_id": 6,
+    "rating": 5,
+    "comment": "Perfect apartment for family trips.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 13,
+    "listing_id": 6,
+    "rating": 3,
+    "comment": "Good but expensive compared to others.",
+    "status": "Pending"
+  },
+  {
+    "user_id": 14,
+    "listing_id": 7,
+    "rating": 4,
+    "comment": "Clean rooms and great facilities.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 15,
+    "listing_id": 7,
+    "rating": 2,
+    "comment": "The service quality was poor.",
+    "status": "Rejected"
+  },
+  {
+    "user_id": 16,
+    "listing_id": 8,
+    "rating": 5,
+    "comment": "Fantastic place. Highly recommended.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 17,
+    "listing_id": 8,
+    "rating": 4,
+    "comment": "Very comfortable and peaceful.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 18,
+    "listing_id": 9,
+    "rating": 3,
+    "comment": "Average stay with basic facilities.",
+    "status": "Pending"
+  },
+  {
+    "user_id": 19,
+    "listing_id": 9,
+    "rating": 5,
+    "comment": "Amazing host and great hospitality.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 20,
+    "listing_id": 10,
+    "rating": 4,
+    "comment": "Good experience overall.",
+    "status": "Approved"
+  },
+  {
+    "user_id": 21,
+    "listing_id": 10,
+    "rating": 1,
+    "comment": "Very disappointing experience.",
+    "status": "Rejected"
+  }
+]
