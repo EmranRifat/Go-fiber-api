@@ -15,8 +15,15 @@ var DB *gorm.DB
 
 func InitDB() (*gorm.DB, error) {
 	// Load environment variables from .env file
-	if err := godotenv.Load(); err != nil {
-		fmt.Println("Warning: Error loading .env file")
+	// if err := godotenv.Load(); err != nil {
+	// 	fmt.Println("Warning: Error loading .env file")
+	// }
+	// Load .env only for local development
+// Load .env only for local development
+	if os.Getenv("RENDER") == "" {
+		if err := godotenv.Load(); err != nil {
+			fmt.Println("No .env file found, using system environment variables")
+		}
 	}
 	
 	// Get database configuration from environment variables
@@ -26,6 +33,9 @@ func InitDB() (*gorm.DB, error) {
 		user := os.Getenv("DB_USER")
 		password := os.Getenv("DB_PASSWORD")
 		sslmode := os.Getenv("DB_SSLMODE")
+
+
+		
 
 	// Set default sslmode if not provided
 	if sslmode == "" {
