@@ -74,6 +74,7 @@ func ManageRoutes(app *fiber.App, jwtm *security.JWTManager, db *gorm.DB) {
 	admin.Get("/allUsers", dashboard.GetAllUsers(db))
 	admin.Get("/reviews", dashboard.GetAllReviews(db))
 	admin.Get("/bookings", controllers.GetBookings(db))
+	admin.Delete("/users/:id", dashboard.DeleteUser(db))
 	admin.Patch("/users/:id/role", dashboard.UpdateUserRole(db))
 
 	admin.Get("/host-listings", dashboard.GetAdminHostListingsHandler(db))
